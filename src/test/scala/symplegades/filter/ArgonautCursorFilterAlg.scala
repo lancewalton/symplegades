@@ -31,7 +31,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
   "hasNode" must "pass the JSON when the JSON has the node" in {
     assertTrue {
-      case (filterAlg, pathAlg) ⇒
+      // Why can't I make the line below (implicit filterAlg, pathAlg) =>
+      (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -47,7 +48,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
   it must "not pass the JSON when the JSON does not have the node" in {
     assertFalse {
-      case (filterAlg, pathAlg) ⇒
+      (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -64,7 +65,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
   "hasBooleanValue" must "pass the JSON when the JSON has the value" in {
     assertTrue {
-      case (filterAlg, pathAlg) ⇒
+      (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -80,7 +81,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
   it must "not pass the JSON when the JSON does not have the value" in {
     assertFalse {
-      case (filterAlg, pathAlg) ⇒
+      (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -97,7 +98,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
   it must "not pass the JSON when the JSON does not have the node" in {
     assertFalse {
-      case (filterAlg, pathAlg) ⇒
+      (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
