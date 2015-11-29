@@ -6,6 +6,8 @@ import Argonaut._
 import symplegades.path.Path
 import symplegades.path.PathAlg
 import symplegades.path.ArgonautCursorPathAlg
+import symplegades.value.FalseValue
+import symplegades.value.TrueValue
 
 class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
   type TypedFilterAlg = FilterAllAlg[Filter, Cursor ⇒ Option[Cursor]]
@@ -63,7 +65,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |}""")
   }
 
-  "hasBooleanValue" must "pass the JSON when the JSON has the value" in {
+  "hasValue" must "pass the JSON when the JSON has the value" in {
     assertTrue {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
@@ -71,7 +73,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
         import pathAlg._
         import Path.PathSyntax
 
-        hasBooleanValue(path("x") / "y", true)
+        hasValue(path("x") / "y", TrueValue)
     }("""|{
           |  "x": {
           |    "y": true
@@ -87,7 +89,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
         import pathAlg._
         import Path.PathSyntax
 
-        hasBooleanValue(path("x") / "y", false)
+        hasValue(path("x") / "y", FalseValue)
     }(
       """|{
          |  "x": {
@@ -104,7 +106,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
         import pathAlg._
         import Path.PathSyntax
 
-        hasBooleanValue(path("x") / "nope", false)
+        hasValue(path("x") / "nope", FalseValue)
     }("""|{
          |   "x": {
          |     "y": true

@@ -22,14 +22,3 @@ object ShowPathAlg extends PathAlg[String] {
   def path(field: String) = Path.asPath(field)
   def /(path: Path[String], field: String) = path andThen field
 }
-
-object Test extends App {
-  def makePath[E](implicit alg: PathAlg[E]): Path[E] = {
-    import alg._
-    import Path.PathSyntax
-    
-    path("foo") / "bar"
-  }
-
-  println(makePath(ShowPathAlg))
-}
