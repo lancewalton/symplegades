@@ -118,11 +118,13 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     assertFalse {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
+        implicit val fa = filterAlg
         import filterAlg._
         import pathAlg._
         import Path.PathSyntax
+        import FilterAlgSyntax._
         
-        focusAndMatch(path("x"), and(hasNode(path("y")), hasValue(path("z"), FalseValue)))
+        focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
     }("""|{
          |   "y": 1,
          |   "z": false
@@ -133,11 +135,13 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     assertTrue {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
+        implicit val fa = filterAlg
         import filterAlg._
         import pathAlg._
         import Path.PathSyntax
+        import FilterAlgSyntax._
         
-        focusAndMatch(path("x"), and(hasNode(path("y")), hasValue(path("z"), FalseValue)))
+        focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
     }("""|{
          |   "x": {
          |     "y": 1,
@@ -150,11 +154,13 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     assertFalse {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
+        implicit val fa = filterAlg
         import filterAlg._
         import pathAlg._
         import Path.PathSyntax
+        import FilterAlgSyntax._
         
-        focusAndMatch(path("x"), and(hasNode(path("y")), hasValue(path("z"), FalseValue)))
+        focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
     }("""|{
          |   "x": {
          |     "y": 1,
