@@ -41,10 +41,10 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
       hasNode(path("x") / "y")
   }("""|{
-         |  "x": {
-         |     "y": 1
-         |  }
-         |}""")
+       |  "x": {
+       |     "y": 1
+       |  }
+       |}""")
 
   it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -55,10 +55,10 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     hasNode(path("x") / "z")
   }(
     """|{
-         |  "x": {
-         |     "y": 1
-         |  }
-         |}""")
+       |  "x": {
+       |     "y": 1
+       |  }
+       |}""")
 
   "hasValue" must "match when the JSON has the value" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -68,10 +68,10 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
     hasValue(path("x") / "y", TrueValue)
   }("""|{
-          |  "x": {
-          |    "y": true
-          |  }
-          |}""")
+        |  "x": {
+        |    "y": true
+        |  }
+        |}""")
 
   it must "not match when the JSON does not have the value" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -82,10 +82,10 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     hasValue(path("x") / "y", FalseValue)
   }(
     """|{
-         |  "x": {
-         |     "y": true
-         |  }
-         |}""")
+       |  "x": {
+       |     "y": true
+       |  }
+       |}""")
 
   it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -95,10 +95,10 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
     hasValue(path("x") / "nope", FalseValue)
   }("""|{
-         |   "x": {
-         |     "y": true
-         |   }
-         |}""")
+       |   "x": {
+       |     "y": true
+       |   }
+       |}""")
 
   "focusAndMatch" must "not match when the focus path does not exist" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -110,9 +110,9 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
     focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
   }("""|{
-         |   "y": 1,
-         |   "z": false
-         |}""".stripMargin)
+       |   "y": 1,
+       |   "z": false
+       |}""".stripMargin)
 
   it must "match when the JSON has the focus path and matches the filter" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -124,11 +124,11 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
     focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
   }("""|{
-         |   "x": {
-         |     "y": 1,
-         |     "z": false
-         |   }
-         |}""".stripMargin)
+       |   "x": {
+       |     "y": 1,
+       |     "z": false
+       |   }
+       |}""".stripMargin)
 
   it must "not match when the JSON has the focus patch but doesn't match the filter" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
@@ -140,11 +140,11 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
 
     focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
   }("""|{
-         |   "x": {
-         |     "y": 1,
-         |     "z": true
-         |   }
-         |}""".stripMargin)
+       |   "x": {
+       |     "y": 1,
+       |     "z": true
+       |   }
+       |}""".stripMargin)
 
   private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
   private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
