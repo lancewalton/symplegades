@@ -12,6 +12,7 @@ object ShowFilterAlg extends FilterAllAlg[String, String] {
   def not(filter: String) = s"NOT($filter)"
   def hasNode(path: Path[String]) = s"HasNode(${showPath(path)})"
   def hasValue(path: Path[String], value: Value) = s"HasValue(${showPath(path)}, ${value.shows})"
+  def focusAndMatch(path: Path[String], filter: String) = s"FocusAndMatch(${showPath(path)}, $filter)"
 
   private def showPath(path: Path[String]) = path.path.list.mkString(".")
 }

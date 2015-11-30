@@ -22,6 +22,7 @@ trait FilterLogicAlg[F] {
 trait FilterNodeAlg[F, P] {
   def hasNode(path: Path[P]): F
   def hasValue(path: Path[P], value: Value): F
+  def focusAndMatch(path: Path[P], filter: F): F
 }
 
 trait FilterAllAlg[F, P] extends FilterExtremeAlg[F] with FilterLogicAlg[F] with FilterNodeAlg[F, P]

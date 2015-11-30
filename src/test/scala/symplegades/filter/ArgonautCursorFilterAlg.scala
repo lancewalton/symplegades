@@ -31,7 +31,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     ArgonautCursorFilterAlg.noPass(json.cursor) must be(false)
   }
 
-  "hasNode" must "pass the JSON when the JSON has the node" in {
+  "hasNode" must "match when the JSON has the node" in {
     assertTrue {
       // Why can't I make the line below (implicit filterAlg, pathAlg) =>
       (filterAlg, pathAlg) ⇒
@@ -48,7 +48,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |}""")
   }
 
-  it must "not pass the JSON when the JSON does not have the node" in {
+  it must "not match when the JSON does not have the node" in {
     assertFalse {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
@@ -65,7 +65,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |}""")
   }
 
-  "hasValue" must "pass the JSON when the JSON has the value" in {
+  "hasValue" must "match when the JSON has the value" in {
     assertTrue {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
@@ -81,7 +81,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
           |}""")
   }
 
-  it must "not pass the JSON when the JSON does not have the value" in {
+  it must "not match when the JSON does not have the value" in {
     assertFalse {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
@@ -98,7 +98,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |}""")
   }
 
-  it must "not pass the JSON when the JSON does not have the node" in {
+  it must "not match when the JSON does not have the node" in {
     assertFalse {
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
@@ -113,7 +113,56 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |   }
          |}""")
   }
+  
+  "focusAndMatch" must "not match when the focus path does not exist" in {
+    assertFalse {
+      (filterAlg, pathAlg) ⇒
+        implicit val pa = pathAlg
+        import filterAlg._
+        import pathAlg._
+        import Path.PathSyntax
+        
+        focusAndMatch(path("x"), and(hasNode(path("y")), hasValue(path("z"), FalseValue)))
+    }("""|{
+         |   "y": 1,
+         |   "z": false
+         |}""".stripMargin)    
+  }
+  
+  it must "match when the JSON has the focus path and matches the filter" in {
+    assertTrue {
+      (filterAlg, pathAlg) ⇒
+        implicit val pa = pathAlg
+        import filterAlg._
+        import pathAlg._
+        import Path.PathSyntax
+        
+        focusAndMatch(path("x"), and(hasNode(path("y")), hasValue(path("z"), FalseValue)))
+    }("""|{
+         |   "x": {
+         |     "y": 1,
+         |     "z": false
+         |   }
+         |}""".stripMargin)
+  }
 
+  it must "not match when the JSON has the focus patch but doesn't match the filter" in {
+    assertFalse {
+      (filterAlg, pathAlg) ⇒
+        implicit val pa = pathAlg
+        import filterAlg._
+        import pathAlg._
+        import Path.PathSyntax
+        
+        focusAndMatch(path("x"), and(hasNode(path("y")), hasValue(path("z"), FalseValue)))
+    }("""|{
+         |   "x": {
+         |     "y": 1,
+         |     "z": true
+         |   }
+         |}""".stripMargin)
+  }
+  
   private def assertFalse(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
   private def assertTrue(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
 
