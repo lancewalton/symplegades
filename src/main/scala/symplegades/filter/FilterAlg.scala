@@ -1,11 +1,6 @@
 package symplegades.filter
 
-import argonaut._
-import Argonaut._
 import symplegades.path.Path
-import symplegades.path.PathAlg
-import symplegades.path.ShowPathAlg
-import symplegades.path.ArgonautCursorPathAlg
 import symplegades.value.Value
 
 trait FilterExtremeAlg[F] {

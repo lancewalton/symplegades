@@ -1,17 +1,18 @@
-package symplegades.filter
+package symplegades.argonaut
 
-import org.scalatest.{ FlatSpec, MustMatchers }
-import argonaut._
-import Argonaut._
-import symplegades.path.Path
-import symplegades.path.PathAlg
-import symplegades.path.ArgonautCursorPathAlg
-import symplegades.value.FalseValue
-import symplegades.value.TrueValue
+import org.scalatest.{ Finders, FlatSpec, MustMatchers }
 
-class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
-  type TypedFilterAlg = FilterAllAlg[Filter, Cursor ⇒ Option[Cursor]]
-  type TypedPathAlg = PathAlg[Cursor ⇒ Option[Cursor]]
+import argonaut.{ Cursor, Json, Parse }
+import symplegades.filter.Filter
+import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
+import symplegades.filter.{FilterAllAlg, FilterAlgSyntax}
+import symplegades.path.Path.PathSyntax
+import symplegades.path.{ Path, PathAlg }
+import symplegades.value.{ FalseValue, TrueValue }
+
+class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
+  type TypedFilterAlg = FilterAllAlg[Filter, CursorToOptionalCursor]
+  type TypedPathAlg = PathAlg[CursorToOptionalCursor]
 
   "allPass" must "pass everything" in {
     val json = parse(
@@ -19,7 +20,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          | "x": 1
          |}""")
 
-    ArgonautCursorFilterAlg.allPass(json.cursor) must be(true)
+    ArgonautFilterAlg.allPass(json.cursor) must be(true)
   }
 
   "noPass" must "pass nothing" in {
@@ -28,7 +29,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          | "x": 1
          |}""")
 
-    ArgonautCursorFilterAlg.noPass(json.cursor) must be(false)
+    ArgonautFilterAlg.noPass(json.cursor) must be(false)
   }
 
   "hasNode" must "match when the JSON has the node" in hasMatch {
@@ -150,7 +151,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
   private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
 
   private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter, json: String) =
-    buildFilter(ArgonautCursorFilterAlg, ArgonautCursorPathAlg)(parse(json).cursor) must be(expected)
+    buildFilter(ArgonautFilterAlg, ArgonautPathAlg)(parse(json).cursor) must be(expected)
 
   private def parse(json: String): Json =
     Parse.parse(json.stripMargin).fold(error ⇒ fail(s"Couldn't parse JSON: $error"), identity)

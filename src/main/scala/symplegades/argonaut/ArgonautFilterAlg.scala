@@ -1,19 +1,14 @@
-package symplegades.filter
+package symplegades.argonaut
 
-import argonaut._
-import Argonaut._
+import argonaut.{ Cursor, JsonNumber }
+import scalaz.std.option.optionInstance
+import scalaz.syntax.applicative.ToApplyOps
+import scalaz.syntax.equal.ToEqualOps
+import symplegades.filter.{ Filter, FilterAllAlg }
 import symplegades.path.Path
-import symplegades.value.Value
-import symplegades.value.FalseValue
-import symplegades.value.TrueValue
-import symplegades.value.NumberValue
-import scalaz.syntax.equal._
-import scalaz.syntax.applicative._
-import scalaz.std.option._
+import symplegades.value.{ FalseValue, NumberValue, TrueValue, Value }
 
-object ArgonautCursorFilterAlg extends FilterAllAlg[Filter, Cursor ⇒ Option[Cursor]] {
-  type PathType = Path[Cursor ⇒ Option[Cursor]]
-
+object ArgonautFilterAlg extends FilterAllAlg[Filter, Cursor ⇒ Option[Cursor]] {
   val allPass = new Filter { def apply(cursor: Cursor) = true }
 
   val noPass = not(allPass)
@@ -40,7 +35,4 @@ object ArgonautCursorFilterAlg extends FilterAllAlg[Filter, Cursor ⇒ Option[Cu
   }
 
   def focusAndMatch(path: Path[Cursor ⇒ Option[Cursor]], filter: Filter) = new Filter { def apply(cursor: Cursor) = navigatePath(path, cursor) exists filter }
-
-  def navigatePath(path: PathType, cursor: Cursor): Option[Cursor] =
-    path.path.list.foldLeft(Option(cursor)) { (acc, e) ⇒ acc.flatMap(e) }
 }
