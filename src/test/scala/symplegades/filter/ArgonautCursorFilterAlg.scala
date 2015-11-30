@@ -31,8 +31,7 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
     ArgonautCursorFilterAlg.noPass(json.cursor) must be(false)
   }
 
-  "hasNode" must "match when the JSON has the node" in {
-    assertTrue {
+  "hasNode" must "match when the JSON has the node" in hasMatch {
       // Why can't I make the line below (implicit filterAlg, pathAlg) =>
       (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
@@ -46,11 +45,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |     "y": 1
          |  }
          |}""")
-  }
 
-  it must "not match when the JSON does not have the node" in {
-    assertFalse {
-      (filterAlg, pathAlg) ⇒
+  it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -63,11 +59,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |     "y": 1
          |  }
          |}""")
-  }
 
-  "hasValue" must "match when the JSON has the value" in {
-    assertTrue {
-      (filterAlg, pathAlg) ⇒
+  "hasValue" must "match when the JSON has the value" in hasMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -79,11 +72,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
           |    "y": true
           |  }
           |}""")
-  }
 
-  it must "not match when the JSON does not have the value" in {
-    assertFalse {
-      (filterAlg, pathAlg) ⇒
+  it must "not match when the JSON does not have the value" in noMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -96,11 +86,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |     "y": true
          |  }
          |}""")
-  }
 
-  it must "not match when the JSON does not have the node" in {
-    assertFalse {
-      (filterAlg, pathAlg) ⇒
+  it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         import filterAlg._
         import pathAlg._
@@ -112,11 +99,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |     "y": true
          |   }
          |}""")
-  }
   
-  "focusAndMatch" must "not match when the focus path does not exist" in {
-    assertFalse {
-      (filterAlg, pathAlg) ⇒
+  "focusAndMatch" must "not match when the focus path does not exist" in noMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         implicit val fa = filterAlg
         import filterAlg._
@@ -129,11 +113,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |   "y": 1,
          |   "z": false
          |}""".stripMargin)    
-  }
   
-  it must "match when the JSON has the focus path and matches the filter" in {
-    assertTrue {
-      (filterAlg, pathAlg) ⇒
+  it must "match when the JSON has the focus path and matches the filter" in hasMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         implicit val fa = filterAlg
         import filterAlg._
@@ -148,11 +129,8 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |     "z": false
          |   }
          |}""".stripMargin)
-  }
 
-  it must "not match when the JSON has the focus patch but doesn't match the filter" in {
-    assertFalse {
-      (filterAlg, pathAlg) ⇒
+  it must "not match when the JSON has the focus patch but doesn't match the filter" in noMatch { (filterAlg, pathAlg) ⇒
         implicit val pa = pathAlg
         implicit val fa = filterAlg
         import filterAlg._
@@ -167,10 +145,9 @@ class ArgonautCursorFilterAlgSpec extends FlatSpec with MustMatchers {
          |     "z": true
          |   }
          |}""".stripMargin)
-  }
   
-  private def assertFalse(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
-  private def assertTrue(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
+  private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
+  private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
 
   private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter, json: String) =
     buildFilter(ArgonautCursorFilterAlg, ArgonautCursorPathAlg)(parse(json).cursor) must be(expected)
