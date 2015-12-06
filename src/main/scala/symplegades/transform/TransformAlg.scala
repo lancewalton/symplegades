@@ -8,4 +8,5 @@ trait TransformAlg[PathElement, Transform, Json] {
   def insert(path: Path[PathElement], toInsert: Json): Transform
   def copy(from: Path[PathElement], to: Path[PathElement]): Transform
   def move(from: Path[PathElement], to: Path[PathElement]): Transform
+  def replaceValue(path: Path[PathElement], replacement: Json): Transform
 }

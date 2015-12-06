@@ -26,7 +26,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
 
   type TypedFilterAlg = FilterAllAlg[Filter, PathElement]
   type TypedPathAlg = PathAlg[PathElement]
-  
+
   implicit val pathAlg = ArgonautPathAlg
 
   "delete" must "return None when the path does not exist" in {
@@ -63,7 +63,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
     		       |   "z": 3
                |}""")))
   }
-  
+
   it must "insert the required object when intermediate objects need to be created from the root" in {
     import ArgonautPathAlg._
     import Path._
@@ -92,7 +92,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |  }
            |}""")))
   }
-  
+
   it must "insert the required object when intermediate objects need to be created from a child object" in {
     import ArgonautPathAlg._
     import Path._
@@ -109,7 +109,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |  }
            |}""")))
   }
-  
+
   "copy" must "copy the specified node to the specified location" in {
     import ArgonautPathAlg._
     import Path._
@@ -122,9 +122,9 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |    "z": 2
            |  },
            |  "z": 2
-           |}""")))    
+           |}""")))
   }
-  
+
   "move" must "move the specified node to the specified location" in {
     import ArgonautPathAlg._
     import Path._
@@ -137,7 +137,21 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |  "z": {
            |    "y": 2
            |  }
-           |}""")))    
+           |}""")))
+  }
+
+  "replace" must "replace the specified node with the new value" in {
+    import ArgonautPathAlg._
+    import Path._
+    val c = ArgonautTransformAlg.replaceValue(path("y") / "z", parse(""""Hello""""))(nestedJson)
+    c must be(Some(
+      parse(
+        """|{
+           |  "x": 1,
+           |  "y": {
+           |    "z": "Hello"
+           |  }
+           |}""")))
   }
 
   private def parse(json: String): Json =

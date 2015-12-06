@@ -49,4 +49,6 @@ object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
     copied ← copy(from, to)(json)
     deleted ← delete(from)(copied)
   } yield deleted
+  
+  def replaceValue(path: Path[PathElement], replacement: Json) = (json: Json) => composePath(path).set(json, replacement)
 }
