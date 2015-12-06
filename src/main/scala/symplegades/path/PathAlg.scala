@@ -1,5 +1,5 @@
 package symplegades.path
 
 trait PathAlg[E] {
-  def /(field: String): E
+  def element(field: String): E
 }

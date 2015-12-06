@@ -67,7 +67,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   it must "insert the required object when intermediate objects need to be created from the root" in {
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.insert(path("z") / "a", parse("3"))(rootJson)
+    val c = ArgonautTransformAlg.insert(root / "z" / "a", parse("3"))(rootJson)
     c must be(Some(
       parse("""|{
                |   "x": 1,
@@ -81,7 +81,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   it must "insert the required object when the insertion point is in a child object" in {
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.insert(path("y") / "a", parse("3"))(nestedJson)
+    val c = ArgonautTransformAlg.insert(root / "y" / "a", parse("3"))(nestedJson)
     c must be(Some(
       parse(
         """|{
@@ -96,7 +96,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   it must "insert the required object when intermediate objects need to be created from a child object" in {
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.insert(path("y") / "a" / "b", parse("3"))(nestedJson)
+    val c = ArgonautTransformAlg.insert(root / "y" / "a" / "b", parse("3"))(nestedJson)
     c must be(Some(
       parse(
         """|{
@@ -113,7 +113,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   "copy" must "copy the specified node to the specified location" in {
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.copy(path("y") / "z", path("z"))(nestedJson)
+    val c = ArgonautTransformAlg.copy(root / "y" / "z", path("z"))(nestedJson)
     c must be(Some(
       parse(
         """|{
@@ -128,7 +128,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   "move" must "move the specified node to the specified location" in {
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.move(path("y") / "z", path("z") / "y")(nestedJson)
+    val c = ArgonautTransformAlg.move(root / "y" / "z", root / "z" / "y")(nestedJson)
     c must be(Some(
       parse(
         """|{
@@ -143,7 +143,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   "replace" must "replace the specified node with the new value" in {
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.replaceValue(path("y") / "z", parse(""""Hello""""))(nestedJson)
+    val c = ArgonautTransformAlg.replaceValue(root / "y" / "z", parse(""""Hello""""))(nestedJson)
     c must be(Some(
       parse(
         """|{
