@@ -6,13 +6,12 @@ import argonaut.{ Cursor, Json, Parse }
 import symplegades.filter.Filter
 import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.filter.{FilterAllAlg, FilterAlgSyntax}
-import symplegades.path.Path.PathSyntax
 import symplegades.path.{ Path, PathAlg }
 import symplegades.value.{ FalseValue, TrueValue }
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
-  type TypedFilterAlg = FilterAllAlg[Filter, CursorToOptionalCursor]
-  type TypedPathAlg = PathAlg[CursorToOptionalCursor]
+  type TypedFilterAlg = FilterAllAlg[Filter, PathElement]
+  type TypedPathAlg = PathAlg[PathElement]
 
   "allPass" must "pass everything" in {
     val json = parse(
@@ -20,7 +19,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
          | "x": 1
          |}""")
 
-    ArgonautFilterAlg.allPass(json.cursor) must be(true)
+    ArgonautFilterAlg.allPass(json) must be(true)
   }
 
   "noPass" must "pass nothing" in {
@@ -29,7 +28,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
          | "x": 1
          |}""")
 
-    ArgonautFilterAlg.noPass(json.cursor) must be(false)
+    ArgonautFilterAlg.noPass(json) must be(false)
   }
 
   "hasNode" must "match when the JSON has the node" in hasMatch {
@@ -38,7 +37,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
       implicit val pa = pathAlg
       import filterAlg._
       import pathAlg._
-      import Path.PathSyntax
+      import Path._
 
       hasNode(path("x") / "y")
   }("""|{
@@ -51,7 +50,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
 
     hasNode(path("x") / "z")
   }(
@@ -65,7 +64,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
 
     hasValue(path("x") / "y", TrueValue)
   }("""|{
@@ -78,7 +77,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
 
     hasValue(path("x") / "y", FalseValue)
   }(
@@ -92,7 +91,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
 
     hasValue(path("x") / "nope", FalseValue)
   }("""|{
@@ -106,7 +105,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val fa = filterAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
     import FilterAlgSyntax._
 
     focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
@@ -120,10 +119,10 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val fa = filterAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
     import FilterAlgSyntax._
 
-    focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
+    focusAndMatch("x", hasNode("y") && hasValue("z", FalseValue))
   }("""|{
        |   "x": {
        |     "y": 1,
@@ -136,10 +135,10 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val fa = filterAlg
     import filterAlg._
     import pathAlg._
-    import Path.PathSyntax
+    import Path._
     import FilterAlgSyntax._
 
-    focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
+    focusAndMatch("x", hasNode("y") && hasValue("z", FalseValue))
   }("""|{
        |   "x": {
        |     "y": 1,
@@ -151,7 +150,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
 
   private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter, json: String) =
-    buildFilter(ArgonautFilterAlg, ArgonautPathAlg)(parse(json).cursor) must be(expected)
+    buildFilter(ArgonautFilterAlg, ArgonautPathAlg)(parse(json)) must be(expected)
 
   private def parse(json: String): Json =
     Parse.parse(json.stripMargin).fold(error ⇒ fail(s"Couldn't parse JSON: $error"), identity)

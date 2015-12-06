@@ -1,5 +1,5 @@
 package symplegades.filter
 
-import argonaut.Cursor
+import argonaut.Json
 
-trait Filter extends Function[Cursor, Boolean]
+trait Filter extends Function[Json, Boolean]

@@ -1,12 +1,13 @@
 package symplegades
 
-import _root_.argonaut.Cursor
+import _root_.argonaut.{Cursor, Json}
 import symplegades.path.Path
+import scalaz.@?>
 
 package object argonaut {
-  type CursorToOptionalCursor = Cursor => Option[Cursor]
-  type PathType = Path[CursorToOptionalCursor]
+  type PathElement = Json @?> Json
+  type PathType = Path[PathElement]
+  type Transformation = Json => Option[Json]
   
-  private[argonaut] def navigatePath(path: PathType, cursor: Cursor): Option[Cursor] =
-    path.path.list.foldLeft(Option(cursor)) { (acc, e) ⇒ acc.flatMap(e) }
+  private[argonaut] def composePath(path: PathType): Json @?> Json = path.path.list.reduceLeft(_ >=> _)
 }

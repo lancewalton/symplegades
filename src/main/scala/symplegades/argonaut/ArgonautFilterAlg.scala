@@ -7,25 +7,25 @@ import scalaz.syntax.equal.ToEqualOps
 import symplegades.filter.{ Filter, FilterAllAlg }
 import symplegades.path.Path
 import symplegades.value.{ FalseValue, NumberValue, TrueValue, Value }
+import argonaut.Json
 
-object ArgonautFilterAlg extends FilterAllAlg[Filter, Cursor ⇒ Option[Cursor]] {
-  val allPass = new Filter { def apply(cursor: Cursor) = true }
+object ArgonautFilterAlg extends FilterAllAlg[Filter, PathElement] {
+  val allPass = new Filter { def apply(json: Json) = true }
 
   val noPass = not(allPass)
 
-  def or(lhs: Filter, rhs: Filter) = new Filter { def apply(cursor: Cursor) = lhs(cursor) || rhs(cursor) }
+  def or(lhs: Filter, rhs: Filter) = new Filter { def apply(json: Json) = lhs(json) || rhs(json) }
 
   def and(lhs: Filter, rhs: Filter) = not(or(not(lhs), not(rhs)))
 
-  def not(filter: Filter) = new Filter { def apply(cursor: Cursor) = !filter(cursor) }
+  def not(filter: Filter) = new Filter { def apply(json: Json) = !filter(json) }
 
-  def hasNode(path: PathType) = new Filter { def apply(cursor: Cursor) = navigatePath(path, cursor).isDefined }
+  def hasNode(path: PathType) = new Filter { def apply(json: Json) = composePath(path).get(json).isDefined }
 
   def hasValue(path: PathType, value: Value) = hasValueInSet(path, value)
 
   def hasValueInSet(path: PathType, value: Value*) = new Filter {
-    def apply(cursor: Cursor) = navigatePath(path, cursor).exists { c ⇒
-      val v = c.focus
+    def apply(json: Json) = composePath(path).get(json).exists { v ⇒
       value.exists {
         case FalseValue     ⇒ v.bool.exists(!_)
         case TrueValue      ⇒ v.bool.exists(identity)
@@ -34,5 +34,5 @@ object ArgonautFilterAlg extends FilterAllAlg[Filter, Cursor ⇒ Option[Cursor]]
     }
   }
 
-  def focusAndMatch(path: Path[Cursor ⇒ Option[Cursor]], filter: Filter) = new Filter { def apply(cursor: Cursor) = navigatePath(path, cursor) exists filter }
+  def focusAndMatch(path: PathType, filter: Filter) = new Filter { def apply(json: Json) = composePath(path).get(json) exists filter }
 }
