@@ -140,12 +140,6 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |}""")))    
   }
 
-  private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
-  private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
-
-  private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter, json: String) =
-    buildFilter(ArgonautFilterAlg, ArgonautPathAlg)(parse(json)) must be(expected)
-
   private def parse(json: String): Json =
     Parse.parse(json.stripMargin).fold(error ⇒ fail(s"Couldn't parse JSON: $error"), identity)
 }
