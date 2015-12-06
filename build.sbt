@@ -41,7 +41,6 @@ val libs = {
     "org.scalaz"                   %% "scalaz-core"                       % scalazVersion,
     "org.scalaz"                   %% "scalaz-effect"                     % scalazVersion,
     "io.argonaut"                  %% "argonaut"                          % "6.1",
-    "com.barclays"                 %% "wartremover-annotations"           % "0.12.6",
     "org.scalatest"                %% "scalatest"                         % "2.2.5"                % "test",
     "org.scalacheck"               %% "scalacheck"                        % "1.12.5"               % "test"
   )
