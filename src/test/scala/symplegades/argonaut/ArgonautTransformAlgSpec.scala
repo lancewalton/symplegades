@@ -109,6 +109,36 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |  }
            |}""")))
   }
+  
+  "copy" must "copy the specified node to the specified location" in {
+    import ArgonautPathAlg._
+    import Path._
+    val c = ArgonautTransformAlg.copy(path("y") / "z", path("z"))(nestedJson)
+    c must be(Some(
+      parse(
+        """|{
+           |  "x": 1,
+           |  "y": {
+           |    "z": 2
+           |  },
+           |  "z": 2
+           |}""")))    
+  }
+  
+  "move" must "move the specified node to the specified location" in {
+    import ArgonautPathAlg._
+    import Path._
+    val c = ArgonautTransformAlg.move(path("y") / "z", path("z") / "y")(nestedJson)
+    c must be(Some(
+      parse(
+        """|{
+           |  "x": 1,
+           |  "y": {},
+           |  "z": {
+           |    "y": 2
+           |  }
+           |}""")))    
+  }
 
   private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
   private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
