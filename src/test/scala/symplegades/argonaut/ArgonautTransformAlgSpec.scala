@@ -33,7 +33,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
          
     import ArgonautPathAlg._
     import Path._
-    val c = ArgonautTransformAlg.delete(path("x")(ArgonautPathAlg))(json)
+    val c = ArgonautTransformAlg.delete(path("y")(ArgonautPathAlg))(json)
     c must be(Some(
         parse("""|{
                  |   "x": 1

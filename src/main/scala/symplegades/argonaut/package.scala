@@ -5,9 +5,9 @@ import symplegades.path.Path
 import scalaz.@?>
 
 package object argonaut {
-  type PathElement = Json @?> Json
+  case class PathElement(lens: Json @?> Json, field: String)
   type PathType = Path[PathElement]
   type Transformation = Json => Option[Json]
   
-  private[argonaut] def composePath(path: PathType): Json @?> Json = path.path.list.reduceLeft(_ >=> _)
+  private[argonaut] def composePath(path: PathType): Json @?> Json = path.path.list.map(_.lens).reduceLeft(_ >=> _)
 }
