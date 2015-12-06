@@ -36,7 +36,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     (filterAlg, pathAlg) ⇒
       implicit val pa = pathAlg
       import filterAlg._
-      import pathAlg._
       import Path._
 
       hasNode(path("x") / "y")
@@ -49,7 +48,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     import filterAlg._
-    import pathAlg._
     import Path._
 
     hasNode(path("x") / "z")
@@ -63,7 +61,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   "hasValue" must "match when the JSON has the value" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     import filterAlg._
-    import pathAlg._
     import Path._
 
     hasValue(path("x") / "y", TrueValue)
@@ -76,7 +73,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON does not have the value" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     import filterAlg._
-    import pathAlg._
     import Path._
 
     hasValue(path("x") / "y", FalseValue)
@@ -90,7 +86,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     import filterAlg._
-    import pathAlg._
     import Path._
 
     hasValue(path("x") / "nope", FalseValue)
@@ -104,7 +99,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     implicit val fa = filterAlg
     import filterAlg._
-    import pathAlg._
     import Path._
     import FilterAlgSyntax._
 
@@ -118,7 +112,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     implicit val fa = filterAlg
     import filterAlg._
-    import pathAlg._
     import Path._
     import FilterAlgSyntax._
 
@@ -134,7 +127,6 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     implicit val pa = pathAlg
     implicit val fa = filterAlg
     import filterAlg._
-    import pathAlg._
     import Path._
     import FilterAlgSyntax._
 
