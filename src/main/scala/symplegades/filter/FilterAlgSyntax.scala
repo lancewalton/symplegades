@@ -1,7 +1,7 @@
 package symplegades.filter
 
 object FilterAlgSyntax {
-  implicit class FilterAlgLogicSyntax[F](filter: F)(implicit fla: FilterLogicAlg[F]) {
+  implicit class FilterAlgLogicSyntax[F, PathElement](filter: F)(implicit fla: FilterLogicAlg[F, PathElement]) {
     import fla._
     def unary_! = not(filter)
     def &&(another: F) = and(filter, another)

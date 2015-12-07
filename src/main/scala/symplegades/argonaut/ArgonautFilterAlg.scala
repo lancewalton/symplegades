@@ -20,7 +20,16 @@ object ArgonautFilterAlg extends FilterAllAlg[Filter, PathElement] {
 
   def not(filter: Filter) = new Filter { def apply(json: Json) = !filter(json) }
 
-  def hasNode(path: PathType) = new Filter { def apply(json: Json) = composePath(path).get(json).isDefined }
+  private def nodeAtPathHasProperty(path: PathType, property: Json => Boolean) = new Filter { def apply(json: Json) = composePath(path).get(json).exists(property) }
+  
+  def hasNode(path: PathType) = nodeAtPathHasProperty(path, _ => true)
+
+  def isObject(path: PathType) = nodeAtPathHasProperty(path, _.isObject)
+  def isArray(path: PathType) = nodeAtPathHasProperty(path, _.isArray)
+  def isNumber(path: PathType) = nodeAtPathHasProperty(path, _.isNumber)
+  def isString(path: PathType) = nodeAtPathHasProperty(path, _.isString)
+  def isBoolean(path: PathType) = nodeAtPathHasProperty(path, _.isBool)
+  def isNull(path: PathType) = nodeAtPathHasProperty(path, _.isNull)
 
   def hasValue(path: PathType, value: Value) = hasValueInSet(path, value)
 
@@ -35,4 +44,7 @@ object ArgonautFilterAlg extends FilterAllAlg[Filter, PathElement] {
   }
 
   def focusAndMatch(path: PathType, filter: Filter) = new Filter { def apply(json: Json) = composePath(path).get(json) exists filter }
+  
+  def exists(path: PathType, filter: Filter) = nodeAtPathHasProperty(path, _.array exists { _ exists(filter) })
+  def forall(path: PathType, filter: Filter) = nodeAtPathHasProperty(path, _.array exists { _ forall(filter) })
 }

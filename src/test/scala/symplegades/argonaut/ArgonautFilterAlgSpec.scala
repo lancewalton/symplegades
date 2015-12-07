@@ -1,13 +1,13 @@
 package symplegades.argonaut
 
 import org.scalatest.{ Finders, FlatSpec, MustMatchers }
-
 import argonaut.{ Cursor, Json, Parse }
 import symplegades.filter.Filter
 import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
-import symplegades.filter.{FilterAllAlg, FilterAlgSyntax}
+import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
 import symplegades.path.{ Path, PathAlg }
 import symplegades.value.{ FalseValue, TrueValue }
+import symplegades.value.NumberValue
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   type TypedFilterAlg = FilterAllAlg[Filter, PathElement]
@@ -123,7 +123,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
        |   }
        |}""".stripMargin)
 
-  it must "not match when the JSON has the focus patch but doesn't match the filter" in noMatch { (filterAlg, pathAlg) ⇒
+  it must "not match when the JSON has the focus path but doesn't match the filter" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
     import filterAlg._
@@ -138,6 +138,132 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
        |   }
        |}""".stripMargin)
 
+  "isArray" must "not match when the JSON does not have the path" in noMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    isArray("x")
+  }("""|{
+       |   "y": 1
+       |}""".stripMargin)
+
+  it must "not match when the JSON has the path but the element is not an array" in noMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    isArray("x")
+  }("""|{
+		  |   "x": 1
+		  |}""".stripMargin)
+      
+  it must "match when the JSON has the path and the element is an array" in hasMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    isArray("x")
+  }("""|{
+      |   "x": []
+      |}""".stripMargin)
+
+  "exists" must "not match when the JSON has the path but is not an array" in noMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    exists("x", allPass)
+  }("""|{
+       |   "x": "Not an array"
+       |}""".stripMargin)
+
+  it must "match when the JSON has an array at the path and the predicate is true for at least one of the elements" in hasMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    exists("x", hasValue(root[PathElement], NumberValue("1")))
+  }("""|{
+       |   "x": [
+       |     1, 2
+       |   ]
+       |}""".stripMargin)
+
+
+  it must "not match when the JSON has an array at the path and the predicate is not true for any of the elements" in noMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    exists("x", hasValue(root[PathElement], NumberValue("2")))
+  }("""|{
+       |   "x": [
+       |     1, 3
+       |   ]
+       |}""".stripMargin)
+       
+  "forAll" must "not match when the JSON has the path but is not an array" in noMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    forall("x", allPass)
+  }("""|{
+       |   "x": "Not an array"
+       |}""".stripMargin)
+
+  it must "match when the JSON has an array at the path and the predicate is true for all of the elements" in hasMatch { (filterAlg, pathAlg) ⇒
+    implicit val pa = pathAlg
+    implicit val fa = filterAlg
+    import filterAlg._
+    import pathAlg._
+    import Path._
+    import FilterAlgSyntax._
+
+    forall("x", hasValue(root[PathElement], NumberValue("1")))
+  }("""|{
+       |   "x": [
+       |     1, 1
+       |   ]
+       |}""".stripMargin)
+       
+  it must "not match when the JSON has an array at the path but the predicate is not true for all of the elements" in noMatch { (filterAlg, pathAlg) ⇒
+	  implicit val pa = pathAlg
+	  implicit val fa = filterAlg
+	  import filterAlg._
+	  import pathAlg._
+	  import Path._
+	  import FilterAlgSyntax._
+	  
+	  forall("x", hasValue(root[PathElement], NumberValue("1")))
+  }("""|{
+		  |   "x": [
+		  |     1, 2
+		  |   ]
+		  |}""".stripMargin)
+       
   private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
   private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
 
