@@ -6,11 +6,9 @@ import symplegades.filter.Filter
 import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
 import symplegades.path.{ Path, PathAlg }
-import symplegades.value.{ FalseValue, TrueValue }
-import symplegades.value.NumberValue
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
-  type TypedFilterAlg = FilterAllAlg[Filter, PathElement]
+  type TypedFilterAlg = FilterAllAlg[Filter, PathElement, Json]
   type TypedPathAlg = PathAlg[PathElement]
 
   "allPass" must "pass everything" in {
@@ -63,7 +61,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import filterAlg._
     import Path._
 
-    hasValue(path("x") / "y", TrueValue)
+    hasValue(path("x") / "y", parse("true"))
   }("""|{
         |  "x": {
         |    "y": true
@@ -75,7 +73,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import filterAlg._
     import Path._
 
-    hasValue(path("x") / "y", FalseValue)
+    hasValue(path("x") / "y", parse("false"))
   }(
     """|{
        |  "x": {
@@ -88,7 +86,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import filterAlg._
     import Path._
 
-    hasValue(path("x") / "nope", FalseValue)
+    hasValue(path("x") / "nope", parse("false"))
   }("""|{
        |   "x": {
        |     "y": true
@@ -102,7 +100,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), FalseValue))
+    focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), parse("false")))
   }("""|{
        |   "y": 1,
        |   "z": false
@@ -115,7 +113,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    focusAndMatch("x", hasNode("y") && hasValue("z", FalseValue))
+    focusAndMatch("x", hasNode("y") && hasValue("z", parse("false")))
   }("""|{
        |   "x": {
        |     "y": 1,
@@ -130,7 +128,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    focusAndMatch("x", hasNode("y") && hasValue("z", FalseValue))
+    focusAndMatch("x", hasNode("y") && hasValue("z", parse("false")))
   }("""|{
        |   "x": {
        |     "y": 1,
@@ -198,7 +196,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    exists("x", hasValue(root[PathElement], NumberValue("1")))
+    exists("x", hasValue(root[PathElement], parse("1")))
   }("""|{
        |   "x": [
        |     1, 2
@@ -214,7 +212,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    exists("x", hasValue(root[PathElement], NumberValue("2")))
+    exists("x", hasValue(root[PathElement], parse("2")))
   }("""|{
        |   "x": [
        |     1, 3
@@ -242,7 +240,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    forall("x", hasValue(root[PathElement], NumberValue("1")))
+    forall("x", hasValue(root[PathElement], parse("1")))
   }("""|{
        |   "x": [
        |     1, 1
@@ -257,7 +255,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
 	  import Path._
 	  import FilterAlgSyntax._
 	  
-	  forall("x", hasValue(root[PathElement], NumberValue("1")))
+	  forall("x", hasValue(root[PathElement], parse("1")))
   }("""|{
 		  |   "x": [
 		  |     1, 2

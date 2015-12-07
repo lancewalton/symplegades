@@ -1,7 +1,7 @@
 package symplegades.filter
 
 import symplegades.path.Path
-import symplegades.value.Value
+import scalaz.Equal
 
 trait FilterExtremeAlg[F] {
   def allPass(): F
@@ -25,11 +25,11 @@ trait FilterNodeTypeAlg[F, PathElement] {
   def isNull(path: Path[PathElement]): F
 }
 
-trait FilterNodeAlg[F, PathElement] {
+trait FilterNodeAlg[F, PathElement, Json] {
   def hasNode(path: Path[PathElement]): F
-  def hasValue(path: Path[PathElement], value: Value): F
-  def hasValueInSet(path: Path[PathElement], value: Value*): F
+  def hasValue(path: Path[PathElement], value: Json): F
+  def hasValueInSet(path: Path[PathElement], value: Json*): F
   def focusAndMatch(path: Path[PathElement], filter: F): F
 }
 
-trait FilterAllAlg[F, PathElement] extends FilterExtremeAlg[F] with FilterLogicAlg[F, PathElement] with FilterNodeTypeAlg[F, PathElement] with FilterNodeAlg[F, PathElement]
+trait FilterAllAlg[F, PathElement, Json] extends FilterExtremeAlg[F] with FilterLogicAlg[F, PathElement] with FilterNodeTypeAlg[F, PathElement] with FilterNodeAlg[F, PathElement, Json]

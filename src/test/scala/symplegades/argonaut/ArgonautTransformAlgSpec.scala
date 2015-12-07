@@ -7,7 +7,6 @@ import symplegades.filter.Filter
 import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
 import symplegades.path.{ Path, PathAlg }
-import symplegades.value.{ FalseValue, TrueValue }
 
 class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   val rootJson = parse(
@@ -24,7 +23,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
        |  }
        |}""")
 
-  type TypedFilterAlg = FilterAllAlg[Filter, PathElement]
+  type TypedFilterAlg = FilterAllAlg[Filter, PathElement, Json]
   type TypedPathAlg = PathAlg[PathElement]
 
   implicit val pathAlg = ArgonautPathAlg
