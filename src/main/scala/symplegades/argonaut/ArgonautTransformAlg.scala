@@ -7,60 +7,72 @@ import symplegades.transform.TransformAlg
 import symplegades.transform.TransformAlg
 import symplegades.path.NonRootPath
 import symplegades.path.RootPath
+import scalaz.syntax.either._
+import scalaz.syntax.std.option._
+import scalaz.syntax.show._
+import scalaz.\/
 
 object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
-  
-  def noop() = (json: Json) ⇒ Option(json)
+
+  implicit class OptionSyntax[T](o: Option[T]) {
+    def swap[V](v: ⇒ V): Option[V] = o.fold(Option(v))(_ ⇒ None)
+    def orFail(operation: String, msg: String, json: Json): \/[TransformFailure, T] = o.toRightDisjunction(TransformFailure(s"$operation: $msg", json))
+  }
+
+  def noop() = (json: Json) ⇒ json.right
 
   def delete(path: NRP) = {
     def workOnRoot(json: Json) = for {
-      fieldCursor ← json.cursor --\ path.lastElement.field
-      deletedFieldCursor ← fieldCursor.delete
-      modifiedJson = deletedFieldCursor.undo
-    } yield modifiedJson
+      fieldCursor ← (json.cursor --\ path.lastElement.field).orFail("Delete", s"The field '${path.lastElement.field}' does not exist", json)
+      deletedFieldCursor ← fieldCursor.delete.orFail("Delete", s"Could not delete field '${path.lastElement.field}'", json)
+    } yield deletedFieldCursor.undo
 
     def workOnChild(json: Json, parentPath: P) = for {
-      parentJson ← composePath(parentPath).get(json)
+      parentJson ← composePath(parentPath).get(json).orFail("Delete", s"Could not get the element at the specified path", json)
       modifiedParentJson ← workOnRoot(parentJson)
-      modifiedJson ← composePath(parentPath).set(json, modifiedParentJson)
+      modifiedJson ← composePath(parentPath).set(json, modifiedParentJson).orFail("Delete", s"Could not set the element at the specified path", json)
     } yield modifiedJson
 
     (json: Json) ⇒ path.removeLastElement match {
-      case RootPath => workOnRoot(json)
-      case p: NRP => workOnChild(json, p)
+      case RootPath ⇒ workOnRoot(json)
+      case p: NRP   ⇒ workOnChild(json, p)
     }
   }
 
   def insert(path: NRP, toInsert: Json): Transform = {
     def workOnRoot(json: Json): Json = (path.lastElement.field, toInsert) ->: json
 
-    def workOnChild(json: Json, parentPath: NRP): Option[Json] = {
+    def workOnChild(json: Json, parentPath: NRP) = {
       composePath(parentPath).get(json)
-        .fold(insert(parentPath, (path.lastElement.field, toInsert) ->: jEmptyObject)(json)) { jsonAtParentPath ⇒ composePath(parentPath).set(json, (path.lastElement.field, toInsert) ->: jsonAtParentPath) }
+        .fold(
+          insert(parentPath, (path.lastElement.field, toInsert) ->: jEmptyObject)(json)) { jsonAtParentPath ⇒
+            composePath(parentPath).set(json, (path.lastElement.field, toInsert) ->: jsonAtParentPath)
+              .orFail("Insert", "Could not insert", json)
+          }
     }
 
     (json: Json) ⇒ {
       composePath(path)
         .get(json)
-        .swap(path.removeLastElement match {
-          case RootPath => Option(workOnRoot(json))
-          case p: NRP => workOnChild(json, p)
-        })
-        .flatten
+        .fold(path.removeLastElement match {
+          case RootPath ⇒ workOnRoot(json).right[TransformFailure]
+          case p: NRP   ⇒ workOnChild(json, p)
+        }) { _ ⇒ TransformFailure(s"Insert: Could not insert ${toInsert}", json).left[Json] }
     }
   }
 
-  def copy(from: P, to: NRP) = (json: Json) ⇒ for {
-    jsonToCopy ← composePath(from).get(json)
+  def copy(from: P, to: NRP): Transform = (json: Json) ⇒ for {
+    jsonToCopy ← composePath(from).get(json).orFail("Copy", "Could not copy", json)
     copied ← insert(to, jsonToCopy)(json)
   } yield copied
 
-  def move(from: NRP, to: NRP) = (json: Json) ⇒ for {
+  def move(from: NRP, to: NRP): Transform = (json: Json) ⇒ for {
     copied ← copy(from, to)(json)
     deleted ← delete(from)(copied)
   } yield deleted
-  
-  def replaceValue(path: P, replacement: Json) = (json: Json) => composePath(path).set(json, replacement)
+
+  def replaceValue(path: P, replacement: Json): Transform = (json: Json) ⇒
+    composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.shows}", json)
 }
