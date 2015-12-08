@@ -1,21 +1,13 @@
 package symplegades.argonaut
 
-import argonaut._
-import Argonaut._
-import symplegades.path.Path
-import symplegades.transform.TransformAlg
-import symplegades.transform.TransformAlg
-import symplegades.path.NonRootPath
-import symplegades.path.RootPath
-import scalaz.syntax.either._
-import scalaz.syntax.std.option._
-import scalaz.syntax.show._
-import scalaz.syntax.std.list._
-import scalaz.syntax.traverse._
-import scalaz.\/
-import scalaz.std.either._
-import scalaz.syntax.applicative._
+import argonaut.Argonaut.{ JsonInstances, jArray, jEmptyObject }
+import argonaut.Json
 import scalaz.std.list._
+import scalaz.syntax.either.ToEitherOps
+import scalaz.syntax.show.ToShowOps
+import scalaz.syntax.traverse.ToTraverseOps
+import symplegades.path.{ NonRootPath, Path, RootPath }
+import symplegades.transform.TransformAlg
 
 object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
   type P = Path[PathElement]

@@ -1,14 +1,10 @@
 package symplegades
 
 import _root_.argonaut.{Cursor, Json}
-import symplegades.path.Path
-import scalaz.@?>
-import symplegades.path.RootPath
-import symplegades.path.NonRootPath
-import scalaz.PLensFamily
-import scalaz.\/
-import scalaz.syntax.either._
-import scalaz.syntax.std.option._
+import scalaz.{ @?> => @?>, PLensFamily, \/ => \/ }
+import scalaz.syntax.std.option.ToOptionOpsFromOption
+import symplegades.argonaut.{ PathElement, TransformFailure }
+import symplegades.path.{ NonRootPath, Path, RootPath }
 
 package object argonaut {
   type PathType = Path[PathElement]
