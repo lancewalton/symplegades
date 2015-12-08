@@ -7,7 +7,7 @@ import symplegades.filter.Filter
 import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
 import symplegades.path.{ Path, PathAlg }
-import scalaz.{-\/, \/-}
+import scalaz.{ -\/, \/- }
 
 class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   val rootJson = parse(
@@ -131,7 +131,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |}""")))
   }
 
-  "replace" must "replace the specified node with the new value" in {
+  "replaceValue" must "replace the specified node with the new value" in {
     import Path._
     val c = ArgonautTransformAlg.replaceValue(root / "y" / "z", parse(""""Hello""""))(nestedJson)
     c must be(\/-(
@@ -141,6 +141,30 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |  "y": {
            |    "z": "Hello"
            |  }
+           |}""")))
+  }
+
+  "map" must "replace the specified array with the mapped array" in {
+    import Path._
+
+    val json = parse(
+      """|{
+       |  "x": 1,
+       |  "y": [
+       |    1,
+       |    2
+       |  ]
+       |}""")
+
+    val c = ArgonautTransformAlg.map(root / "y", j ⇒ j.number.flatMap { _.toInt.map(n ⇒ parse((n * 2).toString)) }.orFail("Test", "Can't", j))(json)
+    c must be(\/-(
+      parse(
+        """|{
+           |  "x": 1,
+           |  "y": [
+           |    2,
+           |    4
+           |  ]
            |}""")))
   }
 

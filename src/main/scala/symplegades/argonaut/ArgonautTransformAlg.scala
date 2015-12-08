@@ -10,16 +10,16 @@ import symplegades.path.RootPath
 import scalaz.syntax.either._
 import scalaz.syntax.std.option._
 import scalaz.syntax.show._
+import scalaz.syntax.std.list._
+import scalaz.syntax.traverse._
 import scalaz.\/
+import scalaz.std.either._
+import scalaz.syntax.applicative._
+import scalaz.std.list._
 
 object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
-
-  implicit class OptionSyntax[T](o: Option[T]) {
-    def swap[V](v: ⇒ V): Option[V] = o.fold(Option(v))(_ ⇒ None)
-    def orFail(operation: String, msg: String, json: Json): \/[TransformFailure, T] = o.toRightDisjunction(TransformFailure(s"$operation: $msg", json))
-  }
 
   def noop() = (json: Json) ⇒ json.right
 
@@ -75,4 +75,12 @@ object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
 
   def replaceValue(path: P, replacement: Json): Transform = (json: Json) ⇒
     composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.shows}", json)
+    
+  def map(path: P, f: Transform): Transform = (json: Json) =>
+    for {
+      jsonAtPath <- composePath(path).get(json).orFail("Map", "Path does not exist", json)
+      arrayAtPath <- jsonAtPath.array.orFail("Map", "The element at the path is not an array", json)
+      mappedArray <- arrayAtPath.map(f).sequenceU
+      updatedJson <- composePath(path).set(json, jArray(mappedArray)).orFail("Map", s"Unable to set updated array: ${mappedArray.shows}", json)
+    } yield updatedJson
 }

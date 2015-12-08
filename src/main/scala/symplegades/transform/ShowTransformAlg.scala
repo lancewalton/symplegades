@@ -13,4 +13,5 @@ class ShowTransformAlg[Json: Show] extends TransformAlg[String, String, Json] {
   def copy(from: Path[String], to: NonRootPath[String]) = s"Copy(${from.shows}, ${to.shows})"
   def move(from: NonRootPath[String], to: NonRootPath[String]) = s"Move(${from.shows}, ${to.shows})"
   def replaceValue(path: Path[String], replacement: Json) = s"ReplaceValue(${path.shows}, ${replacement.shows})"
+  def map(path: Path[String], f: String) = s"Map(${path.shows}, $f)"
 }

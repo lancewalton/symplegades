@@ -10,4 +10,5 @@ trait TransformAlg[PathElement, Transform, Json] {
   def copy(from: Path[PathElement], to: NonRootPath[PathElement]): Transform
   def move(from: NonRootPath[PathElement], to: NonRootPath[PathElement]): Transform
   def replaceValue(path: Path[PathElement], replacement: Json): Transform
+  def map(path: Path[PathElement], f: Transform): Transform
 }
