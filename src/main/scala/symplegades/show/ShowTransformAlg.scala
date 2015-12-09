@@ -1,10 +1,11 @@
-package symplegades.transform
+package symplegades.show
 
 import symplegades.path.Path
 import scalaz.syntax.show._
 import scalaz.std.string._
 import scalaz.Show
 import symplegades.path.NonRootPath
+import symplegades.transform.TransformAlg
 
 class ShowTransformAlg[Json: Show] extends TransformAlg[String, String, Json] {
   val noop = "Noop"
