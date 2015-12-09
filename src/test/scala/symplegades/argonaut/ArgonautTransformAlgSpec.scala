@@ -29,7 +29,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
 
   implicit val pathAlg = ArgonautPathAlg
 
-  "delete" must "return -\\/ when the path does not exist" in {
+  "delete" must """return -\/ when the path does not exist""" in {
     import Path._
     ArgonautTransformAlg.delete(path("z"))(rootJson) mustBe a[-\/[_]]
   }
@@ -43,7 +43,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
                |}""")))
   }
 
-  "insert" must "return -\\/ when the path already exists" in {
+  "insert" must """return -\/ when the path already exists""" in {
     import Path._
     val c = ArgonautTransformAlg.insert(path("x"), parse("3"))(rootJson)
     c mustBe a[-\/[_]]
