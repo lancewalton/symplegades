@@ -1,4 +1,4 @@
-package symplegades.algebra.filter
+package symplegades.core.filter
 
 object FilterAlgSyntax {
   implicit class FilterAlgLogicSyntax[F, PathElement](filter: F)(implicit fla: FilterLogicAlg[F, PathElement]) {

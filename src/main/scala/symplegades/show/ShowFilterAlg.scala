@@ -1,11 +1,11 @@
 package symplegades.show
 
-import symplegades.path.Path
+import symplegades.core.path.Path
 import scalaz.syntax.show._
 import scalaz.std.iterable._
 import scalaz.std.string._
 import scalaz.Show
-import symplegades.algebra.filter.FilterAllAlg
+import symplegades.core.filter.FilterAllAlg
 
 case class ShowFilterAlg[Json](implicit jsonShow: Show[Json]) extends FilterAllAlg[String, String, Json] {
   def allPass() = "All"

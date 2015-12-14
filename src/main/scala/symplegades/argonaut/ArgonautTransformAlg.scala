@@ -6,8 +6,8 @@ import scalaz.std.list._
 import scalaz.syntax.either.ToEitherOps
 import scalaz.syntax.show.ToShowOps
 import scalaz.syntax.traverse.ToTraverseOps
-import symplegades.path.{ NonRootPath, Path, RootPath }
-import symplegades.transform.TransformAlg
+import symplegades.core.path.{ NonRootPath, Path, RootPath }
+import symplegades.core.transform.TransformAlg
 
 object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
   type P = Path[PathElement]

@@ -3,9 +3,9 @@ package symplegades
 import _root_.argonaut.Json
 import scalaz.{ @?> => @?>, PLensFamily, \/ => \/ }
 import scalaz.syntax.std.option.ToOptionOpsFromOption
-import symplegades.algebra.filter.Filter
+import symplegades.core.filter.Filter
 import symplegades.argonaut.{ PathElement, TransformFailure }
-import symplegades.path.{ NonRootPath, Path, RootPath }
+import symplegades.core.path.{ NonRootPath, Path, RootPath }
 
 package object argonaut {
   type PathType = Path[PathElement]

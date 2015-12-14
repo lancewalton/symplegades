@@ -1,4 +1,4 @@
-package symplegades.path
+package symplegades.core.path
 
 import scala.language.implicitConversions
 import scala.language.postfixOps

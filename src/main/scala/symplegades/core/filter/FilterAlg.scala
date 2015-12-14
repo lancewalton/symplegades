@@ -1,6 +1,6 @@
-package symplegades.algebra.filter
+package symplegades.core.filter
 
-import symplegades.path.Path
+import symplegades.core.path.Path
 import scalaz.Equal
 
 trait FilterExtremeAlg[F] {

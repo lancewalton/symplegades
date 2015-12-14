@@ -1,7 +1,7 @@
-package symplegades.transform
+package symplegades.core.transform
 
-import symplegades.path.Path
-import symplegades.path.NonRootPath
+import symplegades.core.path.Path
+import symplegades.core.path.NonRootPath
 
 trait TransformAlg[PathElement, Transform, Json] {
 	def noop(): Transform
