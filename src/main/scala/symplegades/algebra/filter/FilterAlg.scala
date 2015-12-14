@@ -1,4 +1,4 @@
-package symplegades.filter
+package symplegades.algebra.filter
 
 import symplegades.path.Path
 import scalaz.Equal

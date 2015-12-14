@@ -1,7 +1,7 @@
 package symplegades.argonaut
 
 import argonaut.Json
-import symplegades.filter.FilterAllAlg
+import symplegades.algebra.filter.FilterAllAlg
 
 object ArgonautFilterAlg extends FilterAllAlg[JsonFilter, PathElement, Json] {
   val allPass = new JsonFilter { def apply(json: Json) = true }

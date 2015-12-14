@@ -2,9 +2,8 @@ package symplegades.argonaut
 
 import org.scalatest.{ Finders, FlatSpec, MustMatchers }
 import argonaut.{ Cursor, Json, Parse }
-import symplegades.filter.Filter
-import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
-import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
+import symplegades.algebra.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
+import symplegades.algebra.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.path.{ Path, PathAlg }
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
