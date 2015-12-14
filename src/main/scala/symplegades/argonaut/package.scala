@@ -1,13 +1,15 @@
 package symplegades
 
-import _root_.argonaut.{Cursor, Json}
-import scalaz.{ @?> => @?>, PLensFamily, \/ => \/ }
+import _root_.argonaut.Json
+import scalaz.{ @?>, PLensFamily, \/ }
 import scalaz.syntax.std.option.ToOptionOpsFromOption
 import symplegades.argonaut.{ PathElement, TransformFailure }
+import symplegades.filter.Filter
 import symplegades.path.{ NonRootPath, Path, RootPath }
 
 package object argonaut {
   type PathType = Path[PathElement]
+  type JsonFilter = Filter[Json]
   type Transform = Json => \/[TransformFailure, Json]
   
   private[argonaut] def composePath(path: PathType): Json @?> Json = path match {

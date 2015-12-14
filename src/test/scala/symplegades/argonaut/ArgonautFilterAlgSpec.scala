@@ -8,7 +8,7 @@ import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
 import symplegades.path.{ Path, PathAlg }
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
-  type TypedFilterAlg = FilterAllAlg[Filter, PathElement, Json]
+  type TypedFilterAlg = FilterAllAlg[JsonFilter, PathElement, Json]
   type TypedPathAlg = PathAlg[PathElement]
 
   "allPass" must "pass everything" in {
@@ -262,10 +262,10 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
 		  |   ]
 		  |}""".stripMargin)
        
-  private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(false, buildFilter, json)
-  private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter)(json: String) = verify(true, buildFilter, json)
+  private def noMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ JsonFilter)(json: String) = verify(false, buildFilter, json)
+  private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ JsonFilter)(json: String) = verify(true, buildFilter, json)
 
-  private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ Filter, json: String) =
+  private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ JsonFilter, json: String) =
     buildFilter(ArgonautFilterAlg, ArgonautPathAlg)(parse(json)) must be(expected)
 
   private def parse(json: String): Json =

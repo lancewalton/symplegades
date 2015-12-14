@@ -3,9 +3,8 @@ package symplegades.argonaut
 import org.scalatest.{ Finders, FlatSpec, MustMatchers }
 
 import argonaut.{ Cursor, Json, Parse }
-import symplegades.filter.Filter
+import symplegades.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
 import symplegades.filter.FilterAlgSyntax.FilterAlgLogicSyntax
-import symplegades.filter.{ FilterAllAlg, FilterAlgSyntax }
 import symplegades.path.{ Path, PathAlg }
 import scalaz.{ -\/, \/- }
 
@@ -24,7 +23,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
        |  }
        |}""")
 
-  type TypedFilterAlg = FilterAllAlg[Filter, PathElement, Json]
+  type TypedFilterAlg = FilterAllAlg[JsonFilter, PathElement, Json]
   type TypedPathAlg = PathAlg[PathElement]
 
   implicit val pathAlg = ArgonautPathAlg
