@@ -34,10 +34,10 @@ object NonRootPath {
 object Path {
   def root[E](): Path[E] = RootPath.asInstanceOf[Path[E]]
   
-  implicit def path[E](s: String)(implicit pe: PathAlg[E]) = NonRootPath(NonEmptyList(pe element s))
+  implicit def path[E](s: String)(implicit pe: PathAlg[E]) = NonRootPath(NonEmptyList(pe field s))
   
   implicit class PathExtensionSyntax[E: PathAlg](p: Path[E]) {
-    def /(field: String): NonRootPath[E] = p andThen implicitly[PathAlg[E]].element(field)
+    def /(fieldName: String): NonRootPath[E] = p andThen implicitly[PathAlg[E]].field(fieldName)
   }
   
   implicit def show[E](implicit eShow: Show[E]): Show[Path[E]] = new Show[Path[E]] {
