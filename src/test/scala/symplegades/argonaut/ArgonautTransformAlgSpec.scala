@@ -1,13 +1,12 @@
 package symplegades.argonaut
 
 import org.scalatest.{ Finders, FlatSpec, MustMatchers }
-
 import argonaut.{ Cursor, Json, Parse }
 import symplegades.core.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
 import symplegades.core.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.core.path.{ Path, PathAlg }
 import scalaz.{ -\/, \/- }
-import JsonUtils._
+import symplegades.JsonUtils._
 
 class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   val rootJson = parse(

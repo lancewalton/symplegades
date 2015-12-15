@@ -5,7 +5,8 @@ import _root_.argonaut.Json
 import symplegades.core.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
 import symplegades.core.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.core.path.{ Path, PathAlg }
-import JsonUtils._
+import symplegades.JsonUtils._
+import symplegades.JsonUtils
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   type TypedFilterAlg = FilterAllAlg[JsonFilter, PathElement, Json]

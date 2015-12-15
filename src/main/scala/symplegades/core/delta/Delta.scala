@@ -2,7 +2,8 @@ package symplegades.core.delta
 
 import scala.language.implicitConversions
 
-trait Delta[Filter, Transform] extends Product with Serializable
+trait Delta[Filter, Transform] extends Product with Serializable {
+}
 case class SimpleDelta[Filter, Transform](name: String, filter: Filter, transform: Transform) extends Delta[Filter, Transform]
 case class CompositeDelta[Filter, Transform](name: String, filter: Filter, deltas: Delta[Filter, Transform]*) extends Delta[Filter, Transform]
 

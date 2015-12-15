@@ -3,12 +3,12 @@ package symplegades.core.transform
 import symplegades.core.path.Path
 import symplegades.core.path.NonRootPath
 
-trait TransformAlg[PathElement, Transform, Json] {
-	def noop(): Transform
-  def delete(path: NonRootPath[PathElement]): Transform
-  def insert(path: NonRootPath[PathElement], toInsert: Json): Transform
-  def copy(from: Path[PathElement], to: NonRootPath[PathElement]): Transform
-  def move(from: NonRootPath[PathElement], to: NonRootPath[PathElement]): Transform
-  def replaceValue(path: Path[PathElement], replacement: Json): Transform
-  def map(path: Path[PathElement], f: Transform): Transform
+trait TransformAlg[PathElement, Trans, Json] {
+	def noop(): Trans
+  def delete(path: NonRootPath[PathElement]): Trans
+  def insert(path: NonRootPath[PathElement], toInsert: Json): Trans
+  def copy(from: Path[PathElement], to: NonRootPath[PathElement]): Trans
+  def move(from: NonRootPath[PathElement], to: NonRootPath[PathElement]): Trans
+  def replaceValue(path: Path[PathElement], replacement: Json): Trans
+  def map(path: Path[PathElement], f: Trans): Trans
 }

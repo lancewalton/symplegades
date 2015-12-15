@@ -8,8 +8,9 @@ import scalaz.syntax.show.ToShowOps
 import scalaz.syntax.traverse.ToTraverseOps
 import symplegades.core.path.{ NonRootPath, Path, RootPath }
 import symplegades.core.transform.TransformAlg
+import symplegades.core.transform.TransformFailure
 
-trait ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
+trait ArgonautTransformAlg extends TransformAlg[PathElement, JsonTransform, Json] {
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
 
@@ -33,7 +34,7 @@ trait ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
     }
   }
 
-  def insert(path: NRP, toInsert: Json): Transform = {
+  def insert(path: NRP, toInsert: Json): JsonTransform = {
     def workOnRoot(json: Json): Json = (path.lastElement.field, toInsert) ->: json
 
     def workOnChild(json: Json, parentPath: NRP) = {
@@ -49,26 +50,26 @@ trait ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
       composePath(path)
         .get(json)
         .fold(path.removeLastElement match {
-          case RootPath ⇒ workOnRoot(json).right[TransformFailure]
+          case RootPath ⇒ workOnRoot(json).right[TransformFailure[Json]]
           case p: NRP   ⇒ workOnChild(json, p)
         }) { _ ⇒ TransformFailure(s"Insert: Could not insert ${toInsert}", json).left[Json] }
     }
   }
 
-  def copy(from: P, to: NRP): Transform = (json: Json) ⇒ for {
+  def copy(from: P, to: NRP): JsonTransform = (json: Json) ⇒ for {
     jsonToCopy ← composePath(from).get(json).orFail("Copy", "Could not copy", json)
     copied ← insert(to, jsonToCopy)(json)
   } yield copied
 
-  def move(from: NRP, to: NRP): Transform = (json: Json) ⇒ for {
+  def move(from: NRP, to: NRP): JsonTransform = (json: Json) ⇒ for {
     copied ← copy(from, to)(json)
     deleted ← delete(from)(copied)
   } yield deleted
 
-  def replaceValue(path: P, replacement: Json): Transform = (json: Json) ⇒
+  def replaceValue(path: P, replacement: Json): JsonTransform = (json: Json) ⇒
     composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.shows}", json)
 
-  def map(path: P, f: Transform): Transform = (json: Json) ⇒
+  def map(path: P, f: JsonTransform): JsonTransform = (json: Json) ⇒
     for {
       jsonAtPath ← composePath(path).get(json).orFail("Map", "Path does not exist", json)
       arrayAtPath ← jsonAtPath.array.orFail("Map", "The element at the path is not an array", json)
