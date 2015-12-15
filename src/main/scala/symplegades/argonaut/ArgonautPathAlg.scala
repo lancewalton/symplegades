@@ -6,7 +6,7 @@ import argonaut._
 import Argonaut._
 import symplegades.core.path.{ Path, PathAlg }
 
-object ArgonautPathAlg extends PathAlg[PathElement] with Jsons {
+trait ArgonautPathAlg extends PathAlg[PathElement] with Jsons {
 	def field(field: JsonField) = PathElement(jObjectPL >=> jsonObjectPL(field), field)
 }
 

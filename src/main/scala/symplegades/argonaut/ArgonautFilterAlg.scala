@@ -1,9 +1,13 @@
 package symplegades.argonaut
 
 import argonaut.Json
+import scalaz.Equal.equalA
+import scalaz.syntax.equal.ToEqualOps
 import symplegades.core.filter.FilterAllAlg
 
-object ArgonautFilterAlg extends FilterAllAlg[JsonFilter, PathElement, Json] {
+trait ArgonautFilterAlg extends FilterAllAlg[JsonFilter, PathElement, Json] {
+  implicit val jsonEqual = equalA[Json]
+
   val allPass = new JsonFilter { def apply(json: Json) = true }
 
   val noPass = not(allPass)
@@ -12,7 +16,7 @@ object ArgonautFilterAlg extends FilterAllAlg[JsonFilter, PathElement, Json] {
 
   def and(lhs: JsonFilter, rhs: JsonFilter) = not(or(not(lhs), not(rhs)))
 
-  def not(JsonFilter: JsonFilter) = new JsonFilter { def apply(json: Json) = !JsonFilter(json) }
+  def not(filter: JsonFilter) = new JsonFilter { def apply(json: Json) = !filter(json) }
 
   private def nodeAtPathHasProperty(path: PathType, property: Json ⇒ Boolean) = new JsonFilter { def apply(json: Json) = composePath(path).get(json).exists(property) }
 
@@ -28,7 +32,7 @@ object ArgonautFilterAlg extends FilterAllAlg[JsonFilter, PathElement, Json] {
   def hasValue(path: PathType, value: Json) = hasValueInSet(path, value)
 
   def hasValueInSet(path: PathType, value: Json*) = new JsonFilter {
-    def apply(json: Json) = composePath(path).get(json).exists { v ⇒ value.exists { _ == v } }
+    def apply(json: Json) = composePath(path).get(json).exists { v ⇒ value.exists { _ ≟ v } }
   }
 
   def focusAndMatch(path: PathType, JsonFilter: JsonFilter) = new JsonFilter { def apply(json: Json) = composePath(path).get(json) exists JsonFilter }

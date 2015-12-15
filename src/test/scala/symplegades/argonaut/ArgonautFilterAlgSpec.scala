@@ -1,10 +1,11 @@
 package symplegades.argonaut
 
 import org.scalatest.{ Finders, FlatSpec, MustMatchers }
-import argonaut.{ Cursor, Json, Parse }
+import _root_.argonaut.Json
 import symplegades.core.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
 import symplegades.core.filter.FilterAlgSyntax.FilterAlgLogicSyntax
 import symplegades.core.path.{ Path, PathAlg }
+import JsonUtils._
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   type TypedFilterAlg = FilterAllAlg[JsonFilter, PathElement, Json]
@@ -16,7 +17,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
          | "x": 1
          |}""")
 
-    ArgonautFilterAlg.allPass(json) must be(true)
+    filterAlg.allPass(json) must be(true)
   }
 
   "noPass" must "pass nothing" in {
@@ -25,7 +26,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
          | "x": 1
          |}""")
 
-    ArgonautFilterAlg.noPass(json) must be(false)
+    filterAlg.noPass(json) must be(false)
   }
 
   "hasNode" must "match when the JSON has the node" in hasMatch {
@@ -265,8 +266,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   private def hasMatch(buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ JsonFilter)(json: String) = verify(true, buildFilter, json)
 
   private def verify(expected: Boolean, buildFilter: (TypedFilterAlg, TypedPathAlg) ⇒ JsonFilter, json: String) =
-    buildFilter(ArgonautFilterAlg, ArgonautPathAlg)(parse(json)) must be(expected)
+    buildFilter(filterAlg, pathAlg)(parse(json)) must be(expected)
 
-  private def parse(json: String): Json =
-    Parse.parse(json.stripMargin).fold(error ⇒ fail(s"Couldn't parse JSON: $error"), identity)
+  private def filterAlg = new ArgonautFilterAlg {}
+  private def pathAlg = new ArgonautPathAlg {}
 }

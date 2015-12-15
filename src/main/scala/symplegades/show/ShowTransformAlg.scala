@@ -7,7 +7,9 @@ import scalaz.Show
 import symplegades.core.path.NonRootPath
 import symplegades.core.transform.TransformAlg
 
-class ShowTransformAlg[Json: Show] extends TransformAlg[String, String, Json] {
+trait ShowTransformAlg[Json] extends TransformAlg[String, String, Json] {
+  implicit def jsonShow: Show[Json]
+  
   val noop = "Noop"
   def delete(path: NonRootPath[String]) = s"Delete(${path.shows})"
   def insert(path: NonRootPath[String], toInsert: Json) = s"Insert(${path.shows}, ${toInsert.shows})"

@@ -7,7 +7,9 @@ import scalaz.std.string._
 import scalaz.Show
 import symplegades.core.filter.FilterAllAlg
 
-case class ShowFilterAlg[Json](implicit jsonShow: Show[Json]) extends FilterAllAlg[String, String, Json] {
+trait ShowFilterAlg[Json] extends FilterAllAlg[String, String, Json] {
+  implicit def jsonShow: Show[Json]
+  
   def allPass() = "All"
   def noPass() = "None"
   def or(lhs: String, rhs: String) = s"($lhs || $rhs)"

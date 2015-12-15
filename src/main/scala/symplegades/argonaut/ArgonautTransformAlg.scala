@@ -9,7 +9,7 @@ import scalaz.syntax.traverse.ToTraverseOps
 import symplegades.core.path.{ NonRootPath, Path, RootPath }
 import symplegades.core.transform.TransformAlg
 
-object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
+trait ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
 
@@ -67,12 +67,12 @@ object ArgonautTransformAlg extends TransformAlg[PathElement, Transform, Json] {
 
   def replaceValue(path: P, replacement: Json): Transform = (json: Json) ⇒
     composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.shows}", json)
-    
-  def map(path: P, f: Transform): Transform = (json: Json) =>
+
+  def map(path: P, f: Transform): Transform = (json: Json) ⇒
     for {
-      jsonAtPath <- composePath(path).get(json).orFail("Map", "Path does not exist", json)
-      arrayAtPath <- jsonAtPath.array.orFail("Map", "The element at the path is not an array", json)
-      mappedArray <- arrayAtPath.map(f).sequenceU
-      updatedJson <- composePath(path).set(json, jArray(mappedArray)).orFail("Map", s"Unable to set updated array: ${mappedArray.shows}", json)
+      jsonAtPath ← composePath(path).get(json).orFail("Map", "Path does not exist", json)
+      arrayAtPath ← jsonAtPath.array.orFail("Map", "The element at the path is not an array", json)
+      mappedArray ← arrayAtPath.map(f).sequenceU
+      updatedJson ← composePath(path).set(json, jArray(mappedArray)).orFail("Map", s"Unable to set updated array: ${mappedArray.shows}", json)
     } yield updatedJson
 }
