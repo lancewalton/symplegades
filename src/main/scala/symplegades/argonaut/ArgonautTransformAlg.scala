@@ -79,4 +79,6 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
     
   def conditional(filter: JsonFilter, trueTransform: JsonTransform, falseTransform: JsonTransform): JsonTransform = (json: Json) =>
     if (filter(json)) trueTransform(json) else falseTransform(json)
+    
+  def composite(transforms: Trans*): JsonTransform = (json: Json) => transforms.foldLeft(json.right[TransformFailure[Json]]) { _ flatMap _ }
 }

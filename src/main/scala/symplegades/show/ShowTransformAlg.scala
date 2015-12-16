@@ -19,4 +19,5 @@ trait ShowTransformAlg[Json] extends TransformAlg[Json, ShowPathElement, ShowFil
   def replaceValue(path: Path[ShowPathElement], replacement: Json) = _ => s"ReplaceValue(${path.shows}, ${replacement.shows})"
   def map(path: Path[ShowPathElement], f: ShowTransform[Json]) = json => s"Map(${path.shows}, ${f(json)}"
   def conditional(filter: ShowFilter, trueTransform: Trans, falseTransform: Trans) = json => s"Conditional($filter, ${trueTransform(json)}, ${falseTransform(json)})"
+  def composite(transforms: Trans*): Trans = json => s"Composite(${transforms.map(_(json)).mkString(", ")})"
 }

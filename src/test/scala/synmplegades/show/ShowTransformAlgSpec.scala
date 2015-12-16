@@ -39,4 +39,8 @@ class ShowTransformAlgSpec extends FlatSpec with MustMatchers {
   "conditional" must "return 'Conditional' with the true transform and false transform" in {
     conditional(hasNode("x"), insert(path("y") / "z", parse("true")), delete("x"))(dummyJson) must be("""Conditional(HasNode("x"), Insert("y"/"z", true), Delete("x"))""")
   }
+  
+  "composite" must "return 'Composite' with the sequence of transforms" in {
+    composite(insert(path("y") / "z", parse("true")), delete("x"))(dummyJson) must be("""Composite(Insert("y"/"z", true), Delete("x"))""")
+  }
 }

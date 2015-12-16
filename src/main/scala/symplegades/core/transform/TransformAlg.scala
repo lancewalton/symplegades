@@ -15,4 +15,5 @@ trait TransformAlg[Json, PathElement, Filt, TransformResult] {
   def replaceValue(path: Path[PathElement], replacement: Json): Trans
   def map(path: Path[PathElement], f: Trans): Trans
   def conditional(filter: Filt, trueTransform: Trans, falseTransform: Trans): Trans
+  def composite(transforms: Trans*): Trans
 }
