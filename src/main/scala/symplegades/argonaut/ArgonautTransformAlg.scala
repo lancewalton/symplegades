@@ -7,8 +7,7 @@ import scalaz.syntax.either.ToEitherOps
 import scalaz.syntax.show.ToShowOps
 import scalaz.syntax.traverse.ToTraverseOps
 import symplegades.core.path.{ NonRootPath, Path, RootPath }
-import symplegades.core.transform.TransformAlg
-import symplegades.core.transform.TransformFailure
+import symplegades.core.transform.{ TransformAlg, TransformFailure }
 
 trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, JsonTransformResult] {
   type P = Path[PathElement]
