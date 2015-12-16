@@ -3,7 +3,9 @@ package symplegades.core.transform
 import symplegades.core.path.Path
 import symplegades.core.path.NonRootPath
 
-trait TransformAlg[PathElement, Trans, Json] {
+trait TransformAlg[Json, PathElement, TransformResult] {
+  type Trans = Json => TransformResult
+  
 	def noop(): Trans
   def delete(path: NonRootPath[PathElement]): Trans
   def insert(path: NonRootPath[PathElement], toInsert: Json): Trans

@@ -10,7 +10,7 @@ import symplegades.core.path.{ NonRootPath, Path, RootPath }
 import symplegades.core.transform.TransformAlg
 import symplegades.core.transform.TransformFailure
 
-trait ArgonautTransformAlg extends TransformAlg[PathElement, JsonTransform, Json] {
+trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonTransformResult] {
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
 

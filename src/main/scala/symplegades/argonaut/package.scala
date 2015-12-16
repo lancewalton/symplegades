@@ -11,8 +11,9 @@ import symplegades.core.path.{ NonRootPath, Path, RootPath }
 package object argonaut {
   type PathType = Path[PathElement]
   type JsonFilter = Filter[Json]
-  type JsonTransform = Transform[Json]
-  type JsonTransformFailure = TransformFailure[Json]
+	type JsonTransformFailure = TransformFailure[Json]
+  type JsonTransformResult = \/[JsonTransformFailure, Json]
+  type JsonTransform = Transform[Json, JsonTransformResult]
   
   private[argonaut] def composePath(path: PathType): Json @?> Json = path match {
     case RootPath => PLensFamily.plensFamilyId
