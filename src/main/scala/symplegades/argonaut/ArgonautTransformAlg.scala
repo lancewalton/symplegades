@@ -10,7 +10,7 @@ import symplegades.core.path.{ NonRootPath, Path, RootPath }
 import symplegades.core.transform.TransformAlg
 import symplegades.core.transform.TransformFailure
 
-trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonTransformResult] {
+trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, JsonTransformResult] {
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
 
@@ -76,4 +76,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonTransform
       mappedArray ← arrayAtPath.map(f).sequenceU
       updatedJson ← composePath(path).set(json, jArray(mappedArray)).orFail("Map", s"Unable to set updated array: ${mappedArray.shows}", json)
     } yield updatedJson
+    
+  def conditional(filter: JsonFilter, trueTransform: JsonTransform, falseTransform: JsonTransform): JsonTransform = (json: Json) =>
+    if (filter(json)) trueTransform(json) else falseTransform(json)
 }
