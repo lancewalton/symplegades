@@ -1,31 +1,25 @@
 package symplegades.show
 
 import org.scalatest.{ Finders, FlatSpec, MustMatchers }
-import argonaut.{ Cursor, Json, Parse }
-import symplegades.core.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
-import symplegades.core.filter.FilterAlgSyntax.FilterAlgLogicSyntax
-import symplegades.core.path.{ Path, PathAlg }
-import scalaz.{ -\/, \/- }
-import symplegades.JsonUtils._
+import argonaut.Json
 import scalaz.Show
+import scalaz.{ -\/, \/- }
+import symplegades.core.path.Path
+import symplegades.JsonUtils._
 
 class ShowTransformAlgSpec extends FlatSpec with MustMatchers {
   val dummyJson = parse("true")
 
-  val jsonShow = new Show[Json] {
-    override def shows(json: Json) = json.toString
-  }
-  
-  implicit val pathAlg = new ShowPathAlg {
-    val jsonShow = ShowTransformAlgSpec.this.jsonShow
-  }
-  
+  implicit val pathAlg = new ShowPathAlg {}
+
   implicit val transformAlg = new ShowTransformAlg[Json] {
-    val jsonShow = ShowTransformAlgSpec.this.jsonShow
+    val jsonShow = new Show[Json] {
+      override def shows(json: Json) = json.toString
+    }
   }
 
   import Path._
-    
+
   "delete" must """return 'Delete' with the path""" in {
     transformAlg.delete(path("z"))(dummyJson) must be("""Delete("z")""")
   }
