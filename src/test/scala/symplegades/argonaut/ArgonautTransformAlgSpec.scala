@@ -179,7 +179,6 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |  "y": "correct"
            |}""")))
   }
-  
     
   "composite" must "return the result of applying each of the transformations in sequence" in {
     val c = composite(replaceValue("y", parse(""""first"""")), replaceValue("x", parse(""""replaced"""")), replaceValue("y", parse(""""second"""")))(rootJson)
