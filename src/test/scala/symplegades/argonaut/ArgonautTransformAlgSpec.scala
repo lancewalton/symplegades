@@ -34,11 +34,11 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   import Path._
 
   "delete" must """return -\/ when the path does not exist""" in {
-    delete(path("z"))(rootJson) mustBe a[-\/[_]]
+    delete("z")(rootJson) mustBe a[-\/[_]]
   }
 
   it must "return JSON that has the node removed when the node exists" in {
-    val c = delete(path("y"))(rootJson)
+    val c = delete("y")(rootJson)
     c must be(\/-(
       parse("""|{
                |   "x": 1
@@ -46,12 +46,12 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   }
 
   "insert" must """return -\/ when the path already exists""" in {
-    val c = insert(path("x"), parse("3"))(rootJson)
+    val c = insert("x", parse("3"))(rootJson)
     c mustBe a[-\/[_]]
   }
 
   it must "insert the required object when the insertion point is in the root object" in {
-    val c = insert(path("z"), parse("3"))(rootJson)
+    val c = insert("z", parse("3"))(rootJson)
     c must be(\/-(
       parse("""|{
                |   "x": 1,
@@ -101,7 +101,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
   }
 
   "copy" must "copy the specified node to the specified location" in {
-    val c = copy(root / "y" / "z", path("z"))(nestedJson)
+    val c = copy(root / "y" / "z", "z")(nestedJson)
     c must be(\/-(
       parse(
         """|{
@@ -148,7 +148,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
        |  ]
        |}""")
 
-    val c = map(root / "y", j ⇒ j.number.flatMap { _.toInt.map(n ⇒ parse((n * 2).toString)) }.orFail("Test", "Can't", j))(json)
+    val c = map("y", j ⇒ j.number.flatMap { _.toInt.map(n ⇒ parse((n * 2).toString)) }.orFail("Test", "Can't", j))(json)
     c must be(\/-(
       parse(
         """|{

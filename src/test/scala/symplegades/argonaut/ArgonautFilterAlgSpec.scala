@@ -101,7 +101,7 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     import Path._
     import FilterAlgSyntax._
 
-    focusAndMatch(path("x"), hasNode(path("y")) && hasValue(path("z"), parse("false")))
+    focusAndMatch("x", hasNode(path("y")) && hasValue("z", parse("false")))
   }("""|{
        |   "y": 1,
        |   "z": false
