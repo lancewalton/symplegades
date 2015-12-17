@@ -13,6 +13,7 @@ trait TransformAlg[Json, PathElement, Filt, TransformResult] {
   def copy(from: Path[PathElement], to: NonRootPath[PathElement]): Trans
   def move(from: NonRootPath[PathElement], to: NonRootPath[PathElement]): Trans
   def replaceValue(path: Path[PathElement], replacement: Json): Trans
+  def focus(path: Path[PathElement], f: Trans): Trans
   def mapArray(path: Path[PathElement], f: Trans): Trans
   def conditional(filter: Filt, trueTransform: Trans, falseTransform: Trans = identity()): Trans
   def composite(transforms: Trans*): Trans

@@ -138,7 +138,27 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
            |}""")))
   }
 
-  "map" must "replace the specified array with the mapped array" in {
+  "focus" must "apply the given transform to the given path" in {
+    val json = parse(
+      """|{
+       |  "x": 1,
+       |  "y": {
+       |    "x": 1
+       |  }
+       |}""")
+
+    val c = focus("y", replaceValue("x", parse("2")))(json)
+    c must be(\/-(
+      parse(
+        """|{
+           |  "x": 1,
+           |  "y": {
+           |    "x": 2
+           |  }
+           |}""")))
+  }
+  
+  "mapArray" must "replace the specified array with the mapped array" in {
     val json = parse(
       """|{
        |  "x": 1,
