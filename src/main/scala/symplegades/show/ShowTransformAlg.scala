@@ -11,7 +11,7 @@ import symplegades.core.transform.Transform
 trait ShowTransformAlg[Json] extends TransformAlg[Json, ShowPathElement, ShowFilter, ShowTransformResult] {
   implicit def jsonShow: Show[Json]
   
-  val noop = (_: Json) => "Noop"
+  val identity = (_: Json) => "Identity"
   def delete(path: NonRootPath[ShowPathElement]) = _ => s"Delete(${path.shows})"
   def insert(path: NonRootPath[ShowPathElement], toInsert: Json) = _ => s"Insert(${path.shows}, ${toInsert.shows})"
   def copy(from: Path[ShowPathElement], to: NonRootPath[ShowPathElement]) = _ => s"Copy(${from.shows}, ${to.shows})"

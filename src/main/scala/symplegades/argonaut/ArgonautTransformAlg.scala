@@ -13,7 +13,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
   type P = Path[PathElement]
   type NRP = NonRootPath[PathElement]
 
-  def noop() = (json: Json) ⇒ json.right
+  def identity() = (json: Json) ⇒ json.right
 
   def delete(path: NRP) = {
     def workOnRoot(json: Json) = for {
