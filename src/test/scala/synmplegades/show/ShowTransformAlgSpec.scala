@@ -32,8 +32,8 @@ class ShowTransformAlgSpec extends FlatSpec with MustMatchers {
     replaceValue(root / "y" / "z", parse(""""Hello""""))(dummyJson) must be("""ReplaceValue("y"/"z", "Hello")""")
   }
 
-  "map" must "return 'ReplaceValue' with the path and value" in {
-    map("y", replaceValue("z", parse(""""Goodbye"""")))(dummyJson) must be("""Map("y", ReplaceValue("z", "Goodbye")""")
+  "mapArray" must "return 'MapArray' with the path and value" in {
+    mapArray("y", replaceValue("z", parse(""""Goodbye"""")))(dummyJson) must be("""MapArray("y", ReplaceValue("z", "Goodbye")""")
   }
   
   "conditional" must "return 'Conditional' with the true transform and false transform" in {

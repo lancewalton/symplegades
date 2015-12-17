@@ -148,7 +148,7 @@ class ArgonautTransformAlgSpec extends FlatSpec with MustMatchers {
        |  ]
        |}""")
 
-    val c = map("y", j ⇒ j.number.flatMap { _.toInt.map(n ⇒ parse((n * 2).toString)) }.orFail("Test", "Can't", j))(json)
+    val c = mapArray("y", j ⇒ j.number.flatMap { _.toInt.map(n ⇒ parse((n * 2).toString)) }.orFail("Test", "Can't", j))(json)
     c must be(\/-(
       parse(
         """|{
