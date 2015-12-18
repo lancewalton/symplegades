@@ -1,12 +1,10 @@
 package symplegades.argonaut
 
-import org.scalatest.{ Finders, FlatSpec, MustMatchers }
 import _root_.argonaut.Json
-import symplegades.core.filter.{ Filter, FilterAllAlg, FilterAlgSyntax }
-import symplegades.core.filter.FilterAlgSyntax.FilterAlgLogicSyntax
-import symplegades.core.path.{ Path, PathAlg }
+import org.scalatest.{FlatSpec, MustMatchers}
 import symplegades.JsonUtils._
-import symplegades.JsonUtils
+import symplegades.core.filter.{FilterAlgSyntax, FilterAllAlg}
+import symplegades.core.path.{Path, PathAlg}
 
 class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   type TypedFilterAlg = FilterAllAlg[JsonFilter, PathElement, Json]
@@ -34,8 +32,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
     // Why can't I make the line below (implicit filterAlg, pathAlg) =>
     (filterAlg, pathAlg) ⇒
       implicit val pa = pathAlg
-      import filterAlg._
       import Path._
+      import filterAlg._
 
       hasNode(path("x") / "y")
   }("""|{
@@ -46,8 +44,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
 
   it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
-    import filterAlg._
     import Path._
+    import filterAlg._
 
     hasNode(path("x") / "z")
   }(
@@ -59,8 +57,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
 
   "hasValue" must "match when the JSON has the value" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
-    import filterAlg._
     import Path._
+    import filterAlg._
 
     hasValue(path("x") / "y", parse("true"))
   }("""|{
@@ -71,8 +69,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
 
   it must "not match when the JSON does not have the value" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
-    import filterAlg._
     import Path._
+    import filterAlg._
 
     hasValue(path("x") / "y", parse("false"))
   }(
@@ -84,8 +82,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
 
   it must "not match when the JSON does not have the node" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
-    import filterAlg._
     import Path._
+    import filterAlg._
 
     hasValue(path("x") / "nope", parse("false"))
   }("""|{
@@ -97,9 +95,9 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   "focusAndMatch" must "not match when the focus path does not exist" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import Path._
     import FilterAlgSyntax._
+    import Path._
+    import filterAlg._
 
     focusAndMatch("x", hasNode(path("y")) && hasValue("z", parse("false")))
   }("""|{
@@ -110,9 +108,9 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "match when the JSON has the focus path and matches the filter" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import Path._
     import FilterAlgSyntax._
+    import Path._
+    import filterAlg._
 
     focusAndMatch("x", hasNode("y") && hasValue("z", parse("false")))
   }("""|{
@@ -125,9 +123,9 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON has the focus path but doesn't match the filter" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import Path._
     import FilterAlgSyntax._
+    import Path._
+    import filterAlg._
 
     focusAndMatch("x", hasNode("y") && hasValue("z", parse("false")))
   }("""|{
@@ -140,10 +138,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   "isArray" must "not match when the JSON does not have the path" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     isArray("x")
   }("""|{
@@ -153,10 +149,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON has the path but the element is not an array" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     isArray("x")
   }("""|{
@@ -166,10 +160,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "match when the JSON has the path and the element is an array" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     isArray("x")
   }("""|{
@@ -179,10 +171,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   "exists" must "not match when the JSON has the path but is not an array" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     exists("x", allPass)
   }("""|{
@@ -192,10 +182,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "match when the JSON has an array at the path and the predicate is true for at least one of the elements" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     exists("x", hasValue(root[PathElement], parse("1")))
   }("""|{
@@ -208,10 +196,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON has an array at the path and the predicate is not true for any of the elements" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     exists("x", hasValue(root[PathElement], parse("2")))
   }("""|{
@@ -223,10 +209,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   "forAll" must "not match when the JSON has the path but is not an array" in noMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     forall("x", allPass)
   }("""|{
@@ -236,10 +220,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "match when the JSON has an array at the path and the predicate is true for all of the elements" in hasMatch { (filterAlg, pathAlg) ⇒
     implicit val pa = pathAlg
     implicit val fa = filterAlg
-    import filterAlg._
-    import pathAlg._
     import Path._
-    import FilterAlgSyntax._
+    import filterAlg._
 
     forall("x", hasValue(root[PathElement], parse("1")))
   }("""|{
@@ -251,10 +233,8 @@ class ArgonautFilterAlgSpec extends FlatSpec with MustMatchers {
   it must "not match when the JSON has an array at the path but the predicate is not true for all of the elements" in noMatch { (filterAlg, pathAlg) ⇒
 	  implicit val pa = pathAlg
 	  implicit val fa = filterAlg
-	  import filterAlg._
-	  import pathAlg._
 	  import Path._
-	  import FilterAlgSyntax._
+	  import filterAlg._
 	  
 	  forall("x", hasValue(root[PathElement], parse("1")))
   }("""|{

@@ -1,13 +1,16 @@
 package symplegades.argonaut
 
-import argonaut.Argonaut.{ jArray, jEmptyObject, JsonInstances }
+import argonaut.Argonaut.{ jArray, jEmptyObject }
 import argonaut.Json
-import scalaz.std.list.{ listInstance, listShow }
-import scalaz.syntax.either.ToEitherOps
-import scalaz.syntax.show.ToShowOps
-import scalaz.syntax.traverse.ToTraverseOps
+import CatJsonInstances.JsonInstances
+
 import symplegades.core.path.{ Path, NonRootPath, RootPath }
 import symplegades.core.transform.{ TransformAlg, TransformFailure }
+
+import cats.syntax.xor._
+import cats.syntax.show._
+import cats.std.list._
+import cats.syntax.traverse._
 
 trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, JsonTransformResult] {
   type JsonPath = Path[PathElement]
@@ -66,13 +69,13 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
   } yield deleted
 
   def replaceValue(path: JsonPath, replacement: Json): JsonTransform = (json: Json) ⇒
-    composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.shows}", json)
+    composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.show}", json)
 
   def focus(path: JsonPath, f: JsonTransform): JsonTransform = (json: Json) =>
     for {
       jsonAtPath <- composePath(path).get(json).orFail("Focus", "Path does not exist", json)
       mappedValue <- f(jsonAtPath)
-      updatedJson <- composePath(path).set(json, mappedValue).orFail("Focus", s"Unable to set updated value: ${mappedValue.shows}", json)
+      updatedJson <- composePath(path).set(json, mappedValue).orFail("Focus", s"Unable to set updated value: ${mappedValue.show}", json)
     } yield updatedJson
 
   def mapArray(path: JsonPath, f: JsonTransform): JsonTransform = (json: Json) ⇒
@@ -80,7 +83,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
       jsonAtPath ← composePath(path).get(json).orFail("MapArray", "Path does not exist", json)
       arrayAtPath ← jsonAtPath.array.orFail("MapArray", "The element at the path is not an array", json)
       mappedArray ← arrayAtPath.map(f).sequenceU
-      updatedJson ← composePath(path).set(json, jArray(mappedArray)).orFail("MapArray", s"Unable to set updated array: ${mappedArray.shows}", json)
+      updatedJson ← composePath(path).set(json, jArray(mappedArray)).orFail("MapArray", s"Unable to set updated array: ${mappedArray.show}", json)
     } yield updatedJson
 
   def conditional(filter: JsonFilter, trueTransform: JsonTransform, falseTransform: JsonTransform): JsonTransform = (json: Json) =>

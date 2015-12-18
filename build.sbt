@@ -24,13 +24,12 @@ scalacOptions in (Test, Keys.test) ++= basicScalacOptions
 scalacOptions in (Compile, Keys.compile) ++= basicScalacOptions ++ Seq("-Ywarn-value-discard")
 
 val libs = {
-  val scalazVersion      = "7.1.5"
 
   Seq(
-    "org.scalaz"                   %% "scalaz-core"                       % scalazVersion,
-    "io.argonaut"                  %% "argonaut"                          % "6.1",
-    "org.scalatest"                %% "scalatest"                         % "2.2.5"                % "test",
-    "org.scalacheck"               %% "scalacheck"                        % "1.12.5"               % "test"
+    "org.spire-math"    %% "cats"         % "0.3.0",
+    "io.argonaut"       %% "argonaut"     % "6.1",
+    "org.scalatest"     %% "scalatest"    % "2.2.5"   % "test",
+    "org.scalacheck"    %% "scalacheck"   % "1.12.5"  % "test"
   )
 }
 

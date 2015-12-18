@@ -12,11 +12,12 @@ src_managed/
 project/boot/
 project/plugins/project/
 
-# Scala-IDE specific
+# IDE specific
 .scala_dependencies
 .worksheet
-
 .ensime*
+.idea*
+
 /bin/
 /.settings/
 /.cache-main

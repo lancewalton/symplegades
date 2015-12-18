@@ -1,14 +1,14 @@
 package symplegades.show
 
 import _root_.argonaut.Json
-import scalaz.Show
+import cats.Show
 import symplegades.JsonUtils._
 
 object SpecUtils {
   val dummyJson = parse("true")
 
   val jShow = new Show[Json] {
-    override def shows(json: Json) = json.toString
+    override def show(json: Json) = json.toString
   }
 
   implicit val pathAlg = new ShowPathAlg {}
