@@ -2,7 +2,6 @@ package symplegades.core.transform
 
 import symplegades.core.path.Path
 import symplegades.core.path.NonRootPath
-import symplegades.core.filter.Filter
 
 trait TransformAlg[Json, PathElement, Filt, TransformResult] {
   type Trans = Json => TransformResult
