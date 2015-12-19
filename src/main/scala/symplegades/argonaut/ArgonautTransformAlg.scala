@@ -3,6 +3,7 @@ package symplegades.argonaut
 import argonaut.Argonaut.{ jArray, jEmptyObject }
 import argonaut.Json
 import CatJsonInstances.JsonInstances
+import cats.data.Xor
 
 import symplegades.core.path.{ Path, NonRootPath, RootPath }
 import symplegades.core.transform.{ TransformAlg, TransformFailure }
@@ -16,9 +17,9 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
   type JsonPath = Path[PathElement]
   type JsonNonRootPath = NonRootPath[PathElement]
 
-  def identity() = (json: Json) ⇒ json.right
+  def identity(): Json ⇒ Xor[Nothing, Json] = (json: Json) ⇒ json.right
 
-  def delete(path: JsonNonRootPath) = {
+  def delete(path: JsonNonRootPath): Json ⇒ Xor[JsonTransformFailure, Json] = {
     def workOnRoot(json: Json) = for {
       fieldCursor ← (json.cursor --\ path.lastElement.field).orFail("Delete", s"The field '${path.lastElement.field}' does not exist", json)
       deletedFieldCursor ← fieldCursor.delete.orFail("Delete", s"Could not delete field '${path.lastElement.field}'", json)
@@ -27,7 +28,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
     def workOnChild(json: Json, parentPath: JsonPath) = for {
       parentJson ← composePath(parentPath).getOption(json).orFail("Delete", s"Could not get the element at the specified path", json)
       modifiedParentJson ← workOnRoot(parentJson)
-      modifiedJson ← composePath(parentPath).set(json, modifiedParentJson).orFail("Delete", s"Could not set the element at the specified path", json)
+      modifiedJson ← composePath(parentPath).setOption(json)(modifiedParentJson).orFail("Delete", s"Could not set the element at the specified path", json)
     } yield modifiedJson
 
     (json: Json) ⇒ path.removeLastElement match {
@@ -43,23 +44,22 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
       composePath(parentPath).getOption(json)
         .fold(
           insert(parentPath, (path.lastElement.field, toInsert) ->: jEmptyObject)(json)) { jsonAtParentPath ⇒
-            composePath(parentPath).set(json, (path.lastElement.field, toInsert) ->: jsonAtParentPath)
-              .orFail("Insert", "Could not insert", json)
+            composePath(parentPath).setOption(json)( (path.lastElement.field, toInsert) ->: jsonAtParentPath).orFail("Insert", "Could not insert", json)
           }
     }
 
     (json: Json) ⇒ {
       composePath(path)
-        .get(json)
+        .getOption(json)
         .fold(path.removeLastElement match {
           case RootPath           ⇒ workOnRoot(json).right[TransformFailure[Json]]
           case p: JsonNonRootPath ⇒ workOnChild(json, p)
-        }) { _ ⇒ TransformFailure(s"Insert: Could not insert ${toInsert}", json).left[Json] }
+        }) { _ ⇒ TransformFailure(s"Insert: Could not insert $toInsert", json).left[Json] }
     }
   }
 
   def copy(from: JsonPath, to: JsonNonRootPath): JsonTransform = (json: Json) ⇒ for {
-    jsonToCopy ← composePath(from).get(json).orFail("Copy", "Could not copy", json)
+    jsonToCopy ← composePath(from).getOption(json).orFail("Copy", "Could not copy", json)
     copied ← insert(to, jsonToCopy)(json)
   } yield copied
 
@@ -69,21 +69,21 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
   } yield deleted
 
   def replaceValue(path: JsonPath, replacement: Json): JsonTransform = (json: Json) ⇒
-    composePath(path).set(json, replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.show}", json)
+    composePath(path).setOption(json)(replacement).orFail("ReplaceValue", s"Could not replace value: ${replacement.show}", json)
 
   def focus(path: JsonPath, f: JsonTransform): JsonTransform = (json: Json) =>
     for {
-      jsonAtPath <- composePath(path).get(json).orFail("Focus", "Path does not exist", json)
+      jsonAtPath <- composePath(path).getOption(json).orFail("Focus", "Path does not exist", json)
       mappedValue <- f(jsonAtPath)
-      updatedJson <- composePath(path).set(json, mappedValue).orFail("Focus", s"Unable to set updated value: ${mappedValue.show}", json)
+      updatedJson <- composePath(path).setOption(json)(mappedValue).orFail("Focus", s"Unable to set updated value: ${mappedValue.show}", json)
     } yield updatedJson
 
   def mapArray(path: JsonPath, f: JsonTransform): JsonTransform = (json: Json) ⇒
     for {
-      jsonAtPath ← composePath(path).get(json).orFail("MapArray", "Path does not exist", json)
+      jsonAtPath ← composePath(path).getOption(json).orFail("MapArray", "Path does not exist", json)
       arrayAtPath ← jsonAtPath.array.orFail("MapArray", "The element at the path is not an array", json)
       mappedArray ← arrayAtPath.map(f).sequenceU
-      updatedJson ← composePath(path).set(json, jArray(mappedArray)).orFail("MapArray", s"Unable to set updated array: ${mappedArray.show}", json)
+      updatedJson ← composePath(path).setOption(json)(jArray(mappedArray)).orFail("MapArray", s"Unable to set updated array: ${mappedArray.show}", json)
     } yield updatedJson
 
   def conditional(filter: JsonFilter, trueTransform: JsonTransform, falseTransform: JsonTransform): JsonTransform = (json: Json) =>
