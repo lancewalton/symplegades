@@ -1,15 +1,12 @@
 package symplegades.show
 
-import org.scalatest.{ Finders, FlatSpec, MustMatchers }
-import argonaut.Json
-import scalaz.Show
-import scalaz.{ -\/, \/- }
-import symplegades.core.path.Path
+import org.scalatest.{FlatSpec, MustMatchers}
 import symplegades.JsonUtils._
-import SpecUtils._
-import SpecUtils.filterAlg._
-import SpecUtils.transformAlg._
-import Path._
+import symplegades.core.path.Path
+import symplegades.core.path.Path._
+import symplegades.show.SpecUtils._
+import symplegades.show.SpecUtils.filterAlg._
+import symplegades.show.SpecUtils.transformAlg._
 
 class ShowTransformAlgSpec extends FlatSpec with MustMatchers {
   "delete" must "return 'Delete' with the path" in {

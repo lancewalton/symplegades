@@ -1,7 +1,6 @@
 package symplegades.core.filter
 
 import symplegades.core.path.Path
-import scalaz.Equal
 
 trait FilterExtremeAlg[F] {
   def allPass(): F
