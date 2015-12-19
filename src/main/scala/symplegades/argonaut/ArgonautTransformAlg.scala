@@ -25,7 +25,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
     } yield deletedFieldCursor.undo
 
     def workOnChild(json: Json, parentPath: JsonPath) = for {
-      parentJson ← composePath(parentPath).get(json).orFail("Delete", s"Could not get the element at the specified path", json)
+      parentJson ← composePath(parentPath).getOption(json).orFail("Delete", s"Could not get the element at the specified path", json)
       modifiedParentJson ← workOnRoot(parentJson)
       modifiedJson ← composePath(parentPath).set(json, modifiedParentJson).orFail("Delete", s"Could not set the element at the specified path", json)
     } yield modifiedJson
@@ -40,7 +40,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
     def workOnRoot(json: Json): Json = (path.lastElement.field, toInsert) ->: json
 
     def workOnChild(json: Json, parentPath: JsonNonRootPath) = {
-      composePath(parentPath).get(json)
+      composePath(parentPath).getOption(json)
         .fold(
           insert(parentPath, (path.lastElement.field, toInsert) ->: jEmptyObject)(json)) { jsonAtParentPath ⇒
             composePath(parentPath).set(json, (path.lastElement.field, toInsert) ->: jsonAtParentPath)

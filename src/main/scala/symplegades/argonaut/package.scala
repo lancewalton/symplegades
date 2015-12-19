@@ -2,14 +2,12 @@ package symplegades
 
 import _root_.argonaut.Json
 import cats.data.Xor
-import monocle.PLens
-
-import symplegades.core.filter.Filter
-import symplegades.core.transform.{ Transform, TransformFailure }
-import symplegades.core.path.{ NonRootPath, Path, RootPath }
-
 import cats.std.list._
 import cats.syntax.option._
+import monocle.Optional
+import symplegades.core.filter.Filter
+import symplegades.core.path.{NonRootPath, Path, RootPath}
+import symplegades.core.transform.{Transform, TransformFailure}
 
 package object argonaut {
   type PathType = Path[PathElement]
@@ -18,9 +16,9 @@ package object argonaut {
   type JsonTransformResult = Xor[JsonTransformFailure, Json]
   type JsonTransform = Transform[Json, JsonTransformResult]
   
-  private[argonaut] def composePath(path: PathType): PLens[Json, Json, Json, Json] = path match {
-    case RootPath ⇒ PLens.id
-    case NonRootPath(p) ⇒ p.unwrap.map(_.lens).reduceLeft(_ ^|-> _)
+  private[argonaut] def composePath(path: PathType): Optional[Json, Json] = path match {
+    case RootPath ⇒ Optional.id
+    case NonRootPath(p) ⇒ p.unwrap.map(_.lens).reduceLeft(_ ^|-? _)
   }
   
   implicit class OptionSyntax[T](o: Option[T]) {
