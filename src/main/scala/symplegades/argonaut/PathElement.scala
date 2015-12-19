@@ -1,6 +1,6 @@
 package symplegades.argonaut
 
 import argonaut.Json
-import scalaz.{ @?> => @?> }
+import monocle.Optional
 
-case class PathElement(lens: Json @?> Json, field: String)
+case class PathElement(lens: Optional[Json, Json], field: String)
