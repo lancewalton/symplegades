@@ -17,9 +17,9 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
   type JsonPath = Path[PathElement]
   type JsonNonRootPath = NonRootPath[PathElement]
 
-  def identity(): Json ⇒ Xor[Nothing, Json] = (json: Json) ⇒ json.right
+  def identity(): JsonTransform = (json: Json) ⇒ json.right
 
-  def delete(path: JsonNonRootPath): Json ⇒ Xor[JsonTransformFailure, Json] = {
+  def delete(path: JsonNonRootPath): JsonTransform = {
     def workOnRoot(json: Json) = for {
       fieldCursor ← (json.cursor --\ path.lastElement.field).orFail("Delete", s"The field '${path.lastElement.field}' does not exist", json)
       deletedFieldCursor ← fieldCursor.delete.orFail("Delete", s"Could not delete field '${path.lastElement.field}'", json)
