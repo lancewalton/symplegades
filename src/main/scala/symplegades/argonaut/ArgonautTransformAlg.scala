@@ -4,6 +4,7 @@ import argonaut.Argonaut.{ jArray, jEmptyObject }
 import argonaut.Json
 import CatJsonInstances.JsonInstances
 import cats.data.Xor
+import monocle.Optional
 
 import symplegades.core.path.{ Path, NonRootPath, RootPath }
 import symplegades.core.transform.{ TransformAlg, TransformFailure }
@@ -41,10 +42,14 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
     def workOnRoot(json: Json): Json = (path.lastElement.field, toInsert) ->: json
 
     def workOnChild(json: Json, parentPath: JsonNonRootPath) = {
-      composePath(parentPath).getOption(json)
+      val fullParentPath: Optional[Json, Json] = composePath(parentPath)
+
+      fullParentPath.getOption(json)
         .fold(
           insert(parentPath, (path.lastElement.field, toInsert) ->: jEmptyObject)(json)) { jsonAtParentPath ⇒
-            composePath(parentPath).setOption(json)( (path.lastElement.field, toInsert) ->: jsonAtParentPath).orFail("Insert", "Could not insert", json)
+            fullParentPath.setOption(json){
+              (path.lastElement.field, toInsert) ->: jsonAtParentPath
+            }.orFail("Insert", "Could not insert child", json)
           }
     }
 
