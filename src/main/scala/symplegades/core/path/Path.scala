@@ -14,7 +14,7 @@ sealed trait Path[+E] {
 
 case object RootPath extends Path[Nothing] {
   def andThen[E2](e: E2) = NonRootPath(NonEmptyList(e))
-  
+
   implicit def show: Show[RootPath.type] = new Show[RootPath.type] {
     override def show(path: RootPath.type) = "<obj>"
   }
@@ -34,13 +34,13 @@ object NonRootPath {
 
 object Path {
   def root[E](): Path[E] = RootPath.asInstanceOf[Path[E]]
-  
+
   implicit def path[E](s: String)(implicit pe: PathAlg[E]) = NonRootPath(NonEmptyList(pe field s))
-  
+
   implicit class PathExtensionSyntax[E: PathAlg](p: Path[E]) {
     def /(fieldName: String): NonRootPath[E] = p andThen implicitly[PathAlg[E]].field(fieldName)
   }
-  
+
   implicit def show[E](implicit eShow: Show[E]): Show[Path[E]] = new Show[Path[E]] {
     override def show(path: Path[E]) = path match {
       case p: RootPath.type => RootPath.show.show(p)
