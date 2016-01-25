@@ -3,13 +3,12 @@ package symplegades.argonaut
 import _root_.argonaut.Json
 import org.scalatest.{FlatSpec, MustMatchers}
 import symplegades.JsonUtils._
-import symplegades.core.filter.{FilterAlgSyntax, FilterAllAlg}
 import symplegades.core.path.{Path, PathAlg}
 import Path._
-  
+
 class ArgonautPathAlgSpec extends FlatSpec with MustMatchers {
   type TypedPathAlg = PathAlg[PathElement]
-  
+
   implicit val pathAlg: PathAlg[PathElement] = new ArgonautPathAlg {}
 
   "composePath" must "produce a lens that can retrieve a field that exists" in {
@@ -24,7 +23,7 @@ class ArgonautPathAlgSpec extends FlatSpec with MustMatchers {
 
     composePath(root / "x" / "y").get(json) must be(Some(parse("""{ "z" : 1 }""")))
   }
-  
+
   it must "produce a lens that can set a field in the root of the object" in {
     val json = parse(
       """|{

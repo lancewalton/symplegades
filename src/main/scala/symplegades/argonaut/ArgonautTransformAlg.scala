@@ -54,7 +54,7 @@ trait ArgonautTransformAlg extends TransformAlg[Json, PathElement, JsonFilter, J
         .fold(path.removeLastElement match {
           case RootPath           ⇒ workOnRoot(json).right[TransformFailure[Json]]
           case p: JsonNonRootPath ⇒ workOnChild(json, p)
-        }) { _ ⇒ TransformFailure(s"Insert: Could not insert ${toInsert}", json).left[Json] }
+        }) { _ ⇒ TransformFailure(s"Insert: Could not insert $toInsert", json).left[Json] }
     }
   }
 
